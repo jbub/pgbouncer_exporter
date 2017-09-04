@@ -12,7 +12,12 @@ import (
 )
 
 const (
-	Name              = "pgbouncer_exporter"
+	// Name is the name of the exporter .
+	Name = "pgbouncer_exporter"
+)
+
+// Names of the exporter subsystems.
+const (
 	SubsystemStats    = "stats"
 	SubsystemPools    = "pools"
 	SubsystemDatabase = "database"
@@ -47,6 +52,7 @@ type Exporter struct {
 	gaugeVecItems []gaugeVecItem
 }
 
+// New returns new Exporter.
 func New(cfg config.Config, st domain.Store) *Exporter {
 	return &Exporter{
 		st:  st,
@@ -200,6 +206,7 @@ func New(cfg config.Config, st domain.Store) *Exporter {
 	}
 }
 
+// Describe implements prometheus Collector.Describe.
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	for _, gaugeVecItem := range e.gaugeVecItems {
 		if gaugeVecItem.enabled {
@@ -208,6 +215,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	}
 }
 
+// Collect implements prometheus Collector.Collect.
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()

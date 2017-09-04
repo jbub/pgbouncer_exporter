@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli"
 )
 
+// Server is a cli command used for running exporter http server.
 var Server = &cli.Command{
 	Name:   "server",
 	Usage:  "Starts exporter server.",
