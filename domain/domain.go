@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+// Stat represents stat row.
 type Stat struct {
 	Database        string
 	TotalRequests   int64
@@ -16,6 +17,7 @@ type Stat struct {
 	AverageQuery    int64
 }
 
+// Pool represents pool row.
 type Pool struct {
 	Database     string
 	User         string
@@ -30,6 +32,7 @@ type Pool struct {
 	PoolMode     string
 }
 
+// Database represents database row.
 type Database struct {
 	Name               string
 	Host               string
@@ -43,19 +46,26 @@ type Database struct {
 	CurrentConnections int64
 }
 
+// List represents list row.
 type List struct {
 	List  string
 	Items int64
 }
 
+// Store defines interface for accessing pgbouncer stats.
 type Store interface {
+	// GetStats returns stats.
 	GetStats(ctx context.Context) ([]Stat, error)
 
+	// GetPools returns pools.
 	GetPools(ctx context.Context) ([]Pool, error)
 
+	// GetDatabases returns databases.
 	GetDatabases(ctx context.Context) ([]Database, error)
 
+	// GetLists returns lists.
 	GetLists(ctx context.Context) ([]List, error)
 
+	// Close closes the store.
 	Close()
 }

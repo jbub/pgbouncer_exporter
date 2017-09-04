@@ -52,6 +52,7 @@ type list struct {
 	Items int64  `db:"items"`
 }
 
+// NewSQLStore returns new SQLStore.
 func NewSQLStore(dataSource string) (*SQLStore, error) {
 	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
@@ -60,10 +61,12 @@ func NewSQLStore(dataSource string) (*SQLStore, error) {
 	return &SQLStore{db: db}, nil
 }
 
+// SQLStore is a sql based Store implementation.
 type SQLStore struct {
 	db *sqlx.DB
 }
 
+// GetStats returns stats.
 func (s *SQLStore) GetStats(ctx context.Context) ([]domain.Stat, error) {
 	var stats []stat
 	if err := s.db.SelectContext(ctx, &stats, "SHOW STATS"); err != nil {
@@ -76,6 +79,7 @@ func (s *SQLStore) GetStats(ctx context.Context) ([]domain.Stat, error) {
 	return result, nil
 }
 
+// GetPools returns pools.
 func (s *SQLStore) GetPools(ctx context.Context) ([]domain.Pool, error) {
 	var pools []pool
 	if err := s.db.SelectContext(ctx, &pools, "SHOW POOLS"); err != nil {
@@ -99,6 +103,7 @@ func (s *SQLStore) GetPools(ctx context.Context) ([]domain.Pool, error) {
 	return result, nil
 }
 
+// GetDatabases returns databases.
 func (s *SQLStore) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 	var databases []database
 	if err := s.db.SelectContext(ctx, &databases, "SHOW DATABASES"); err != nil {
@@ -122,6 +127,7 @@ func (s *SQLStore) GetDatabases(ctx context.Context) ([]domain.Database, error) 
 	return result, nil
 }
 
+// GetLists returns lists.
 func (s *SQLStore) GetLists(ctx context.Context) ([]domain.List, error) {
 	var lists []list
 	if err := s.db.SelectContext(ctx, &lists, "SHOW LISTS"); err != nil {
@@ -134,6 +140,7 @@ func (s *SQLStore) GetLists(ctx context.Context) ([]domain.List, error) {
 	return result, nil
 }
 
+// Close closes the store.
 func (s *SQLStore) Close() {
 	if s.db != nil {
 		s.db.Close()
