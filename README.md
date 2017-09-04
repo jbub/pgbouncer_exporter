@@ -1,6 +1,6 @@
 # Pgbouncer exporter [![Build Status](https://travis-ci.org/jbub/pgbouncer_exporter.svg)][travis]
 
-[![Docker Pulls](https://img.shields.io/docker/jbub/pgbouncer_exporter.svg?maxAge=604800)][hub]
+[![Docker Pulls](https://img.shields.io/docker/pulls/jbub/pgbouncer_exporter.svg?maxAge=604800)][hub]
 [![Go Report Card](https://goreportcard.com/badge/github.com/jbub/pgbouncer_exporter)][goreportcard]
 [![Coverage Status](https://coveralls.io/repos/github/jbub/pgbouncer_exporter/badge.svg?branch=master)][coveralls]
 
