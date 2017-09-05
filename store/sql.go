@@ -90,6 +90,7 @@ func (s *SQLStore) GetPools(ctx context.Context) ([]domain.Pool, error) {
 		result = append(result, domain.Pool{
 			Database:     row.Database,
 			User:         row.User,
+			Active:       row.Active,
 			Waiting:      row.Waiting,
 			ServerActive: row.ServerActive,
 			ServerIdle:   row.ServerIdle,
