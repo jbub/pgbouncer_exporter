@@ -67,7 +67,7 @@ func (s *HTTPServer) Run() error {
 	exp := collector.New(s.cfg, s.st)
 	prometheus.MustRegister(exp)
 
-	log.Infoln("Starting ", collector.Name)
+	log.Infoln("Starting ", collector.Name, version.Info())
 	log.Infoln("Server listening on", s.cfg.ListenAddress)
 	log.Infoln("Metrics available at", s.cfg.TelemetryPath)
 

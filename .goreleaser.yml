@@ -6,7 +6,13 @@ release:
 builds:
   - main: main.go
     binary: pgbouncer_exporter
-    ldflags: -s -w -X main.Version={{.Version}} -X main.Commit={{.Commit}} -X main.Date={{.Date}} -extldflags '-static'
+    ldflags: |
+      -s
+      -w
+      -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.Version={{.Version}}
+      -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.Revision={{.Commit}}
+      -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.BuildDate={{.Date}}
+      -extldflags '-static'
     flags: -a -tags netgo
     env:
       - CGO_ENABLED=0

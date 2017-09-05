@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -10,18 +9,9 @@ import (
 	"github.com/jbub/pgbouncer_exporter/collector"
 
 	_ "github.com/lib/pq"
+	"github.com/prometheus/common/version"
 	"github.com/urfave/cli"
 )
-
-var (
-	Version string
-	Commit  string
-	Date    string
-)
-
-func getVersion() string {
-	return fmt.Sprintf("version=%s, commit=%s, date=%s", Version, Commit, Date)
-}
 
 func main() {
 	app := &cli.App{
@@ -79,7 +69,7 @@ func main() {
 		Commands: []*cli.Command{
 			cmd.Server,
 		},
-		Version: getVersion(),
+		Version: version.Info(),
 	}
 
 	if err := app.Run(os.Args); err != nil {
