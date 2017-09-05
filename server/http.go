@@ -35,22 +35,42 @@ func getLandingPage(telemetryPath string) []byte {
 	</html>`)
 }
 
+// New returns new prometheus exporter http server.
 func New(cfg config.Config) (*HTTPServer, error) {
 	st, err := store.NewSQLStore(cfg.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("unable to initialize store: %v", err)
 	}
 
+	exp := collector.New(cfg, st)
+	if err := prometheus.Register(exp); err != nil {
+		return nil, fmt.Errorf("unable to register prometheus collector: %v", err)
+	}
+
+	mux := newMux(cfg)
 	return &HTTPServer{
 		cfg: cfg,
 		st:  st,
+		mux: mux,
+		exp: exp,
 	}, nil
+}
+
+func newMux(cfg config.Config) *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.Handle(cfg.TelemetryPath, promhttp.Handler())
+	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		w.Write(getLandingPage(cfg.TelemetryPath))
+	})
+	return mux
 }
 
 // HTTPServer represents prometheus exporter http server.
 type HTTPServer struct {
 	cfg config.Config
 	st  domain.Store
+	mux *http.ServeMux
+	exp *collector.Exporter
 }
 
 // Run runs http server.
@@ -64,16 +84,9 @@ func (s *HTTPServer) Run() error {
 		os.Exit(1)
 	}(s.st)
 
-	exp := collector.New(s.cfg, s.st)
-	prometheus.MustRegister(exp)
-
 	log.Infoln("Starting ", collector.Name, version.Info())
 	log.Infoln("Server listening on", s.cfg.ListenAddress)
 	log.Infoln("Metrics available at", s.cfg.TelemetryPath)
 
-	http.Handle(s.cfg.TelemetryPath, promhttp.Handler())
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		w.Write(getLandingPage(s.cfg.TelemetryPath))
-	})
-	return http.ListenAndServe(s.cfg.ListenAddress, nil)
+	return http.ListenAndServe(s.cfg.ListenAddress, s.mux)
 }
