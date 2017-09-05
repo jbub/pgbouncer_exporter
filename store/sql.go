@@ -39,7 +39,7 @@ type database struct {
 	Host               sql.NullString `db:"host"`
 	Port               int64          `db:"port"`
 	Database           string         `db:"database"`
-	ForceUser          string         `db:"force_user"`
+	ForceUser          sql.NullString `db:"force_user"`
 	PoolSize           int64          `db:"pool_size"`
 	ReservePool        int64          `db:"reserve_pool"`
 	PoolMode           sql.NullString `db:"pool_mode"`
@@ -116,7 +116,7 @@ func (s *SQLStore) GetDatabases(ctx context.Context) ([]domain.Database, error) 
 			Host:               row.Host.String,
 			Port:               row.Port,
 			Database:           row.Database,
-			ForceUser:          row.ForceUser,
+			ForceUser:          row.ForceUser.String,
 			PoolSize:           row.PoolSize,
 			ReservePool:        row.ReservePool,
 			PoolMode:           row.PoolMode.String,
