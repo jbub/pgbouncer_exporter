@@ -50,6 +50,7 @@ func (s *MockStore) GetLists(ctx context.Context) ([]domain.List, error) {
 }
 
 // Close closes the store.
-func (s *MockStore) Close() {
+func (s *MockStore) Close() error {
 	s.CloseCalled = true
+	return nil
 }

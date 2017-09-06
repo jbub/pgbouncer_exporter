@@ -67,5 +67,5 @@ type Store interface {
 	GetLists(ctx context.Context) ([]List, error)
 
 	// Close closes the store.
-	Close()
+	Close() error
 }

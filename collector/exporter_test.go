@@ -18,6 +18,8 @@ func TestGetStoreResultExportEnabled(t *testing.T) {
 		ExportLists:     true,
 	}
 	st := store.NewMockStore()
+	defer st.Close()
+
 	exp := New(cfg, st)
 	ctx := context.Background()
 
@@ -43,6 +45,8 @@ func TestGetStoreResultExportDisabled(t *testing.T) {
 		ExportLists:     false,
 	}
 	st := store.NewMockStore()
+	defer st.Close()
+
 	exp := New(cfg, st)
 	ctx := context.Background()
 

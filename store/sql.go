@@ -142,8 +142,9 @@ func (s *SQLStore) GetLists(ctx context.Context) ([]domain.List, error) {
 }
 
 // Close closes the store.
-func (s *SQLStore) Close() {
+func (s *SQLStore) Close() error {
 	if s.db != nil {
-		s.db.Close()
+		return s.db.Close()
 	}
+	return nil
 }
