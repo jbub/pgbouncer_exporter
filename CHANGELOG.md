@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Refactor http server to improve testability.
+
 ## 0.1.2
 
 * Fill missing Active field in sql store GetPools method.
