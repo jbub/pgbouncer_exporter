@@ -1,26 +1,16 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
+	"time"
 
 	"github.com/jbub/pgbouncer_exporter/collector"
 	"github.com/jbub/pgbouncer_exporter/config"
 	"github.com/jbub/pgbouncer_exporter/domain"
-	"github.com/jbub/pgbouncer_exporter/store"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/prometheus/common/log"
-	"github.com/prometheus/common/version"
 )
-
-func init() {
-	prometheus.MustRegister(version.NewCollector(collector.Name))
-}
 
 func getLandingPage(telemetryPath string) []byte {
 	return []byte(`
@@ -36,31 +26,33 @@ func getLandingPage(telemetryPath string) []byte {
 }
 
 // New returns new prometheus exporter http server.
-func New(cfg config.Config) (*HTTPServer, error) {
-	st, err := store.NewSQLStore(cfg.DatabaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("unable to initialize store: %v", err)
-	}
-
-	exp := collector.New(cfg, st)
-	if err := prometheus.Register(exp); err != nil {
-		return nil, fmt.Errorf("unable to register prometheus collector: %v", err)
-	}
-
-	mux := newMux(cfg)
+func New(cfg config.Config, exp *collector.Exporter, st domain.Store) *HTTPServer {
+	reg := collector.NewRegistry(exp)
+	mux := newHTTPMux(reg, cfg.TelemetryPath)
+	srv := newHTTPServer(cfg.ListenAddress, mux)
 	return &HTTPServer{
 		cfg: cfg,
 		st:  st,
-		mux: mux,
-		exp: exp,
-	}, nil
+		srv: srv,
+	}
 }
 
-func newMux(cfg config.Config) *http.ServeMux {
+func newHTTPServer(listenAddr string, handler http.Handler) *http.Server {
+	return &http.Server{
+		Addr:              listenAddr,
+		Handler:           handler,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       10 * time.Second,
+	}
+}
+
+func newHTTPMux(reg prometheus.Gatherer, telemetryPath string) *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.Handle(cfg.TelemetryPath, promhttp.Handler())
+	mux.Handle(telemetryPath, promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		w.Write(getLandingPage(cfg.TelemetryPath))
+		w.Write(getLandingPage(telemetryPath))
 	})
 	return mux
 }
@@ -69,24 +61,10 @@ func newMux(cfg config.Config) *http.ServeMux {
 type HTTPServer struct {
 	cfg config.Config
 	st  domain.Store
-	mux *http.ServeMux
-	exp *collector.Exporter
+	srv *http.Server
 }
 
 // Run runs http server.
 func (s *HTTPServer) Run() error {
-	// cleanup on program interrupt/termination
-	c := make(chan os.Signal, 2)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func(st domain.Store) {
-		<-c
-		st.Close()
-		os.Exit(1)
-	}(s.st)
-
-	log.Infoln("Starting ", collector.Name, version.Info())
-	log.Infoln("Server listening on", s.cfg.ListenAddress)
-	log.Infoln("Metrics available at", s.cfg.TelemetryPath)
-
-	return http.ListenAndServe(s.cfg.ListenAddress, s.mux)
+	return s.srv.ListenAndServe()
 }

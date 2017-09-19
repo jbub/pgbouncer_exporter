@@ -7,21 +7,22 @@ import (
 
 	"github.com/jbub/pgbouncer_exporter/config"
 	"github.com/jbub/pgbouncer_exporter/domain"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/log"
 )
 
 const (
-	// Name is the name of the exporter .
+	// Name is the name of the exporter.
 	Name = "pgbouncer_exporter"
 )
 
 // Names of the exporter subsystems.
 const (
-	SubsystemStats    = "stats"
-	SubsystemPools    = "pools"
-	SubsystemDatabase = "database"
-	SubsystemLists    = "lists"
+	SubsystemStats     = "stats"
+	SubsystemPools     = "pools"
+	SubsystemDatabases = "database"
+	SubsystemLists     = "lists"
 )
 
 type gaugeVecItem struct {
@@ -170,7 +171,7 @@ func New(cfg config.Config, st domain.Store) *Exporter {
 				enabled: cfg.ExportDatabases,
 				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 					Namespace: Name,
-					Subsystem: SubsystemDatabase,
+					Subsystem: SubsystemDatabases,
 					Name:      "current_connections",
 					Help:      "Current number of connections.",
 				}, []string{"name", "pool_mode"}),

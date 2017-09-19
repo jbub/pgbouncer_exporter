@@ -1,9 +1,15 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/jbub/pgbouncer_exporter/collector"
 	"github.com/jbub/pgbouncer_exporter/config"
 	"github.com/jbub/pgbouncer_exporter/server"
+	"github.com/jbub/pgbouncer_exporter/store"
 
+	"github.com/prometheus/common/log"
+	"github.com/prometheus/common/version"
 	"github.com/urfave/cli"
 )
 
@@ -26,9 +32,20 @@ func runServer(ctx *cli.Context) error {
 		ExportLists:     ctx.Bool("export-lists"),
 	}
 
-	s, err := server.New(cfg)
+	st, err := store.NewSQLStore(cfg.DatabaseURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to initialize store: %v", err)
 	}
-	return s.Run()
+	defer st.Close()
+
+	exp := collector.New(cfg, st)
+	srv := server.New(cfg, exp, st)
+	if err := srv.Run(); err != nil {
+		return fmt.Errorf("unable to run server: %v", err)
+	}
+
+	log.Infoln("Starting ", collector.Name, version.Info())
+	log.Infoln("Server listening on", cfg.ListenAddress)
+	log.Infoln("Metrics available at", cfg.TelemetryPath)
+	return nil
 }
