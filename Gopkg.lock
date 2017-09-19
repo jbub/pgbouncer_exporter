@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "17ce1425424ab154092bbb43af630bd647f3bb0d"
+  revision = "ae59567b9aab61b50b2590679a62c3c044030b61"
 
 [[projects]]
   branch = "master"
@@ -41,7 +41,7 @@
   branch = "master"
   name = "github.com/lib/pq"
   packages = [".","oid"]
-  revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
+  revision = "23da1db4f16d9658a86ae9b717c245fc078f10f1"
 
 [[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
@@ -71,7 +71,7 @@
   branch = "master"
   name = "github.com/prometheus/common"
   packages = ["expfmt","internal/bitbucket.org/ww/goautoneg","log","model","version"]
-  revision = "bc8b88226a1210b016e9993b1d75f858c9c8f778"
+  revision = "2f17f4a9d485bf34b4bfaccc273805040e4f86c8"
 
 [[projects]]
   branch = "master"
@@ -101,13 +101,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "81e90905daefcd6fd217b62423c0908922eadb30"
+  revision = "7d9177d70076375b9a59c8fde23d52d9c4a7ecd5"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows","windows/registry","windows/svc/eventlog"]
-  revision = "7ddbeae9ae08c6a06a59597f0c9edbc5ff2444ce"
+  revision = "b6e1ae21643682ce023deb8d152024597b0e9bb4"
 
 [[projects]]
   name = "gopkg.in/alecthomas/kingpin.v2"
@@ -118,6 +118,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1761162df78278f98fce2b745817951e8d3bdf257954cb1d642a5d6dd189dc24"
+  inputs-digest = "d54eda4ac00f80351cedbe0bd7c0006ed8a3abf6b6da1648af74f12cf980cdbe"
   solver-name = "gps-cdcl"
   solver-version = 1
