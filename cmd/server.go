@@ -39,7 +39,7 @@ func runServer(ctx *cli.Context) error {
 	defer st.Close()
 
 	exp := collector.New(cfg, st)
-	srv := server.New(cfg, exp, st)
+	srv := server.New(cfg, exp)
 	if err := srv.Run(); err != nil {
 		return fmt.Errorf("unable to run server: %v", err)
 	}

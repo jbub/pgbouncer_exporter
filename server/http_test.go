@@ -70,7 +70,7 @@ func metricName(subsystem string, name string) string {
 	return fmt.Sprintf("%v_%v_%v", collector.Name, subsystem, name)
 }
 
-func newTestingServer(cfg config.Config) *httptest.Server {
+func newTestingStore() *store.MockStore {
 	st := store.NewMockStore()
 	st.Stats = []domain.Stat{
 		{
@@ -124,8 +124,12 @@ func newTestingServer(cfg config.Config) *httptest.Server {
 			Items: 68,
 		},
 	}
+	return st
+}
+
+func newTestingServer(cfg config.Config, st domain.Store) *httptest.Server {
 	exp := collector.New(cfg, st)
-	httpSrv := New(cfg, exp, st)
+	httpSrv := New(cfg, exp)
 	return httptest.NewServer(httpSrv.srv.Handler)
 }
 
@@ -142,7 +146,10 @@ func TestResponseContainsMetrics(t *testing.T) {
 				ExportLists:     testCase.exportLists,
 			}
 
-			srv := newTestingServer(cfg)
+			st := newTestingStore()
+			defer st.Close()
+
+			srv := newTestingServer(cfg, st)
 			defer srv.Close()
 
 			client := srv.Client()
@@ -152,6 +159,19 @@ func TestResponseContainsMetrics(t *testing.T) {
 
 			metrics, err := parser.TextToMetricFamilies(resp.Body)
 			assert.NoError(t, err)
+
+			if cfg.ExportPools {
+				assert.True(t, st.PoolsCalled)
+			}
+			if cfg.ExportStats {
+				assert.True(t, st.StatsCalled)
+			}
+			if cfg.ExportDatabases {
+				assert.True(t, st.DatabasesCalled)
+			}
+			if cfg.ExportLists {
+				assert.True(t, st.ListsCalled)
+			}
 
 			for _, expMetric := range testCase.metrics {
 				if _, ok := metrics[expMetric]; !ok {

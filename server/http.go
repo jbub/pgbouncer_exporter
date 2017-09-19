@@ -6,7 +6,6 @@ import (
 
 	"github.com/jbub/pgbouncer_exporter/collector"
 	"github.com/jbub/pgbouncer_exporter/config"
-	"github.com/jbub/pgbouncer_exporter/domain"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,13 +25,11 @@ func getLandingPage(telemetryPath string) []byte {
 }
 
 // New returns new prometheus exporter http server.
-func New(cfg config.Config, exp *collector.Exporter, st domain.Store) *HTTPServer {
+func New(cfg config.Config, exp *collector.Exporter) *HTTPServer {
 	reg := collector.NewRegistry(exp)
 	mux := newHTTPMux(reg, cfg.TelemetryPath)
 	srv := newHTTPServer(cfg.ListenAddress, mux)
 	return &HTTPServer{
-		cfg: cfg,
-		st:  st,
 		srv: srv,
 	}
 }
@@ -59,8 +56,6 @@ func newHTTPMux(reg prometheus.Gatherer, telemetryPath string) *http.ServeMux {
 
 // HTTPServer represents prometheus exporter http server.
 type HTTPServer struct {
-	cfg config.Config
-	st  domain.Store
 	srv *http.Server
 }
 
