@@ -40,12 +40,14 @@ func runServer(ctx *cli.Context) error {
 
 	exp := collector.New(cfg, st)
 	srv := server.New(cfg, exp)
-	if err := srv.Run(); err != nil {
-		return fmt.Errorf("unable to run server: %v", err)
-	}
 
 	log.Infoln("Starting ", collector.Name, version.Info())
 	log.Infoln("Server listening on", cfg.ListenAddress)
 	log.Infoln("Metrics available at", cfg.TelemetryPath)
+	log.Infoln("Build context", version.BuildContext())
+
+	if err := srv.Run(); err != nil {
+		return fmt.Errorf("unable to run server: %v", err)
+	}
 	return nil
 }
