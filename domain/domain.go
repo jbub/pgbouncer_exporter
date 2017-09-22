@@ -66,6 +66,9 @@ type Store interface {
 	// GetLists returns lists.
 	GetLists(ctx context.Context) ([]List, error)
 
+	// Check checks the health of the store.
+	Check() error
+
 	// Close closes the store.
 	Close() error
 }

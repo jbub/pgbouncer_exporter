@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/jbub/pgbouncer_exporter/domain"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -141,10 +142,12 @@ func (s *SQLStore) GetLists(ctx context.Context) ([]domain.List, error) {
 	return result, nil
 }
 
+// Check checks the health of the store.
+func (s *SQLStore) Check() error {
+	return s.db.Ping()
+}
+
 // Close closes the store.
 func (s *SQLStore) Close() error {
-	if s.db != nil {
-		return s.db.Close()
-	}
-	return nil
+	return s.db.Close()
 }

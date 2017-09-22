@@ -21,17 +21,7 @@ var Server = &cli.Command{
 }
 
 func runServer(ctx *cli.Context) error {
-	cfg := config.Config{
-		ListenAddress:   ctx.String("web.listen-address"),
-		TelemetryPath:   ctx.String("web.telemetry-path"),
-		DatabaseURL:     ctx.String("database-url"),
-		StoreTimeout:    ctx.Duration("store-timeout"),
-		ExportStats:     ctx.Bool("export-stats"),
-		ExportPools:     ctx.Bool("export-pools"),
-		ExportDatabases: ctx.Bool("export-databases"),
-		ExportLists:     ctx.Bool("export-lists"),
-	}
-
+	cfg := config.LoadFromCLI(ctx)
 	st, err := store.NewSQLStore(cfg.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("unable to initialize store: %v", err)

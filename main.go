@@ -68,6 +68,7 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			cmd.Server,
+			cmd.Health,
 		},
 		Version: version.Info(),
 	}

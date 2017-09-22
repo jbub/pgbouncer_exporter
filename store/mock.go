@@ -23,6 +23,7 @@ type MockStore struct {
 	DatabasesCalled bool
 	ListsCalled     bool
 	CloseCalled     bool
+	CheckCalled     bool
 }
 
 // GetStats returns stats.
@@ -47,6 +48,12 @@ func (s *MockStore) GetDatabases(ctx context.Context) ([]domain.Database, error)
 func (s *MockStore) GetLists(ctx context.Context) ([]domain.List, error) {
 	s.ListsCalled = true
 	return s.Lists, nil
+}
+
+// Check checks the health of the store.
+func (s *MockStore) Check() error {
+	s.CheckCalled = true
+	return nil
 }
 
 // Close closes the store.
