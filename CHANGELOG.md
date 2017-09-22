@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Add healthcheck.
+
 ## 0.1.3
 
 * Refactor http server to improve testability.
