@@ -6,15 +6,24 @@ import (
 
 // Stat represents stat row.
 type Stat struct {
-	Database        string
-	TotalRequests   int64
-	TotalReceived   int64
-	TotalSent       int64
-	TotalQueryTime  int64
-	AverageRequests int64
-	AverageReceived int64
-	AverageSent     int64
-	AverageQuery    int64
+	Database          string
+	TotalRequests     int64
+	TotalReceived     int64
+	TotalSent         int64
+	TotalQueryTime    int64
+	TotalXactCount    int64
+	TotalXactTime     int64
+	TotalQueryCount   int64
+	TotalWaitTime     int64
+	AverageRequests   int64
+	AverageReceived   int64
+	AverageSent       int64
+	AverageQuery      int64
+	AverageQueryCount int64
+	AverageQueryTime  int64
+	AverageXactTime   int64
+	AverageXactCount  int64
+	AverageWaitTime   int64
 }
 
 // Pool represents pool row.
@@ -29,6 +38,7 @@ type Pool struct {
 	ServerTested int64
 	ServerLogin  int64
 	MaxWait      int64
+	MaxWaitUs    int64
 	PoolMode     string
 }
 
@@ -44,6 +54,8 @@ type Database struct {
 	PoolMode           string
 	MaxConnections     int64
 	CurrentConnections int64
+	Paused             int64
+	Disabled           int64
 }
 
 // List represents list row.

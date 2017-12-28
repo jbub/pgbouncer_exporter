@@ -10,15 +10,24 @@ import (
 )
 
 type stat struct {
-	Database        string `db:"database"`
-	TotalRequests   int64  `db:"total_requests"`
-	TotalReceived   int64  `db:"total_received"`
-	TotalSent       int64  `db:"total_sent"`
-	TotalQueryTime  int64  `db:"total_query_time"`
-	AverageRequests int64  `db:"avg_req"`
-	AverageReceived int64  `db:"avg_recv"`
-	AverageSent     int64  `db:"avg_sent"`
-	AverageQuery    int64  `db:"avg_query"`
+	Database          string `db:"database"`
+	TotalRequests     int64  `db:"total_requests"`
+	TotalReceived     int64  `db:"total_received"`
+	TotalSent         int64  `db:"total_sent"`
+	TotalQueryTime    int64  `db:"total_query_time"`
+	TotalXactCount    int64  `db:"total_xact_count"`
+	TotalXactTime     int64  `db:"total_xact_time"`
+	TotalQueryCount   int64  `db:"total_query_count"`
+	TotalWaitTime     int64  `db:"total_wait_time"`
+	AverageRequests   int64  `db:"avg_req"`
+	AverageReceived   int64  `db:"avg_recv"`
+	AverageSent       int64  `db:"avg_sent"`
+	AverageQuery      int64  `db:"avg_query"`
+	AverageQueryCount int64  `db:"avg_query_count"`
+	AverageQueryTime  int64  `db:"avg_query_time"`
+	AverageXactTime   int64  `db:"avg_xact_time"`
+	AverageXactCount  int64  `db:"avg_xact_count"`
+	AverageWaitTime   int64  `db:"avg_wait_time"`
 }
 
 type pool struct {
@@ -32,6 +41,7 @@ type pool struct {
 	ServerTested int64          `db:"sv_tested"`
 	ServerLogin  int64          `db:"sv_login"`
 	MaxWait      int64          `db:"maxwait"`
+	MaxWaitUs    int64          `db:"maxwait_us"`
 	PoolMode     sql.NullString `db:"pool_mode"`
 }
 
@@ -46,6 +56,8 @@ type database struct {
 	PoolMode           sql.NullString `db:"pool_mode"`
 	MaxConnections     int64          `db:"max_connections"`
 	CurrentConnections int64          `db:"current_connections"`
+	Paused             int64          `db:"paused"`
+	Disabled           int64          `db:"disabled"`
 }
 
 type list struct {
@@ -99,6 +111,7 @@ func (s *SQLStore) GetPools(ctx context.Context) ([]domain.Pool, error) {
 			ServerTested: row.ServerTested,
 			ServerLogin:  row.ServerLogin,
 			MaxWait:      row.MaxWait,
+			MaxWaitUs:    row.MaxWaitUs,
 			PoolMode:     row.PoolMode.String,
 		})
 	}
@@ -124,6 +137,8 @@ func (s *SQLStore) GetDatabases(ctx context.Context) ([]domain.Database, error) 
 			PoolMode:           row.PoolMode.String,
 			MaxConnections:     row.MaxConnections,
 			CurrentConnections: row.CurrentConnections,
+			Paused:             row.Paused,
+			Disabled:           row.Disabled,
 		})
 	}
 	return result, nil
