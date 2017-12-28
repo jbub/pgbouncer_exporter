@@ -1,3 +1,8 @@
+## 0.1.5
+
+* Build with Go 1.9.2.
+* Add Docker setup to Goreleaser config. 
+
 ## 0.1.4
 
 * Add healthcheck.
