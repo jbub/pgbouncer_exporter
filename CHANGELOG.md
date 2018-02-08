@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Build with Go 1.9.4.
+
 ## 0.2.0
 
 * Add support for PgBouncer 1.8.
