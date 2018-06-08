@@ -1,5 +1,6 @@
 project_name: pgbouncer_exporter
 release:
+  draft: true
   github:
     owner: jbub
     name: pgbouncer_exporter
@@ -35,8 +36,6 @@ archive:
     - CHANGELOG.md
 snapshot:
   name_template: "SNAPSHOT-{{ .Commit }}"
-release:
-  draft: true
 dockers:
   - goos: linux
     goarch: amd64
