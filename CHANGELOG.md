@@ -1,3 +1,9 @@
+## 0.2.2
+
+* Update vendored libs, prune tests and unused pkgs.
+* Build with Go 1.10.3.
+* Add golangci.yml.
+
 ## 0.2.1
 
 * Build with Go 1.9.4.
