@@ -7,7 +7,6 @@ import (
 
 	"github.com/jbub/pgbouncer_exporter/config"
 	"github.com/jbub/pgbouncer_exporter/domain"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/log"
 )
@@ -126,6 +125,60 @@ func New(cfg config.Config, st domain.Store) *Exporter {
 						items = append(items, gaugeVecValueItem{
 							labels: []string{stat.Database},
 							count:  float64(stat.TotalQueryTime),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportStats,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemStats,
+					Name:      "total_xact_time",
+					Help:      "Total number of microseconds spent by pgbouncer when connected to PostgreSQL in a transaction, either idle in transaction or executing queries.",
+				}, []string{"database"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, stat := range res.stats {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{stat.Database},
+							count:  float64(stat.TotalXactTime),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportStats,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemStats,
+					Name:      "total_query_count",
+					Help:      "Total number of SQL queries pooled by pgbouncer.",
+				}, []string{"database"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, stat := range res.stats {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{stat.Database},
+							count:  float64(stat.TotalQueryCount),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportStats,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemStats,
+					Name:      "total_xact_count",
+					Help:      "Total number of SQL transactions pooled by pgbouncer.",
+				}, []string{"database"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, stat := range res.stats {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{stat.Database},
+							count:  float64(stat.TotalXactCount),
 						})
 					}
 					return items
