@@ -221,6 +221,114 @@ func New(cfg config.Config, st domain.Store) *Exporter {
 				},
 			},
 			{
+				enabled: cfg.ExportPools,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemPools,
+					Name:      "active_server",
+					Help:      "Server connections that linked to client.",
+				}, []string{"database", "user", "pool_mode"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, pool := range res.pools {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{pool.Database, pool.User, pool.PoolMode},
+							count:  float64(pool.ServerActive),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportPools,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemPools,
+					Name:      "idle_server",
+					Help:      "Server connections that unused and immediately usable for client queries.",
+				}, []string{"database", "user", "pool_mode"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, pool := range res.pools {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{pool.Database, pool.User, pool.PoolMode},
+							count:  float64(pool.ServerIdle),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportPools,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemPools,
+					Name:      "used_server",
+					Help:      "Server connections that have been idle more than server_check_delay, so they needs server_check_query to run on it before it can be used.",
+				}, []string{"database", "user", "pool_mode"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, pool := range res.pools {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{pool.Database, pool.User, pool.PoolMode},
+							count:  float64(pool.ServerUsed),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportPools,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemPools,
+					Name:      "tested_server",
+					Help:      "Server connections that are currently running either server_reset_query or server_check_query.",
+				}, []string{"database", "user", "pool_mode"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, pool := range res.pools {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{pool.Database, pool.User, pool.PoolMode},
+							count:  float64(pool.ServerTested),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportPools,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemPools,
+					Name:      "login_server",
+					Help:      "Server connections currently in logging in process.",
+				}, []string{"database", "user", "pool_mode"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, pool := range res.pools {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{pool.Database, pool.User, pool.PoolMode},
+							count:  float64(pool.ServerLogin),
+						})
+					}
+					return items
+				},
+			},
+			{
+				enabled: cfg.ExportPools,
+				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+					Namespace: Name,
+					Subsystem: SubsystemPools,
+					Name:      "max_wait",
+					Help:      "How long the first (oldest) client in queue has waited, in seconds. If this starts increasing, then the current pool of servers does not handle requests quick enough. Reason may be either overloaded server or just too small of a pool_size setting.",
+				}, []string{"database", "user", "pool_mode"}),
+				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+					for _, pool := range res.pools {
+						items = append(items, gaugeVecValueItem{
+							labels: []string{pool.Database, pool.User, pool.PoolMode},
+							count:  float64(pool.MaxWait),
+						})
+					}
+					return items
+				},
+			},
+			{
 				enabled: cfg.ExportDatabases,
 				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 					Namespace: Name,
