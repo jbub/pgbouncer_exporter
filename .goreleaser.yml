@@ -14,7 +14,7 @@ builds:
       -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.Revision={{.Commit}}
       -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.BuildDate={{.Date}}
       -extldflags '-static'
-    flags: -a -tags netgo
+    flags: -tags netgo
     env:
       - CGO_ENABLED=0
     goos:
@@ -40,6 +40,6 @@ dockers:
   - goos: linux
     goarch: amd64
     binary: pgbouncer_exporter
-    image: jbub/pgbouncer_exporter
-    tag_template: "{{ .Tag }}"
-    latest: true
+    image_templates:
+      - "jbub/pgbouncer_exporter:latest"
+      - "jbub/pgbouncer_exporter:{{ .Tag }}"
