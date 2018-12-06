@@ -33,3 +33,6 @@ _testmain.go
 
 # goreleaser dist
 dist/
+
+# binary
+pgbouncer_exporter
