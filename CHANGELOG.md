@@ -1,3 +1,10 @@
+## 0.3.0
+
+* Export more metrics from stats and pools. 
+* Build with Go 1.11.2.
+* Add Go modules support.
+* Drop dep support.
+
 ## 0.2.2
 
 * Update vendored libs, prune tests and unused pkgs.
