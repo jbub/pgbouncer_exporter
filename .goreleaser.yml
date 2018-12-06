@@ -10,9 +10,9 @@ builds:
     ldflags: |
       -s
       -w
-      -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.Version={{.Version}}
-      -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.Revision={{.Commit}}
-      -X github.com/jbub/pgbouncer_exporter/vendor/github.com/prometheus/common/version.BuildDate={{.Date}}
+      -X github.com/prometheus/common/version.Version={{ .Version }}
+      -X github.com/prometheus/common/version.Revision={{ .Commit }}
+      -X github.com/prometheus/common/version.BuildDate={{ .Date }}
       -extldflags '-static'
     flags: -tags netgo
     env:

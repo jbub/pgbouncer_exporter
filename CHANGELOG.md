@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Fix build version passing in .goreleaser.yml.
+
 ## 0.3.0
 
 * Export more metrics from stats and pools. 
