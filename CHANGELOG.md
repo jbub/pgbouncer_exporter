@@ -1,3 +1,10 @@
+## 0.4.0
+
+* Build with Go 1.12.
+* Pin Go modules to version tags.
+* Move code to internal package.
+* Switch ci from travis to drone.
+
 ## 0.3.1
 
 * Fix build version passing in .goreleaser.yml.
