@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jbub/pgbouncer_exporter/cmd"
-	"github.com/jbub/pgbouncer_exporter/collector"
+	"github.com/jbub/pgbouncer_exporter/internal/collector"
 
 	_ "github.com/lib/pq"
 	"github.com/prometheus/common/version"

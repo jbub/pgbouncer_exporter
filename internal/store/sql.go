@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/jbub/pgbouncer_exporter/domain"
+	"github.com/jbub/pgbouncer_exporter/internal/domain"
 
 	"github.com/jmoiron/sqlx"
 )

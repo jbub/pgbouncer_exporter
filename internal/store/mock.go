@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/jbub/pgbouncer_exporter/domain"
+	"github.com/jbub/pgbouncer_exporter/internal/domain"
 )
 
 // NewMockStore returns new MockStore.

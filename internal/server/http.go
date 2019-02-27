@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jbub/pgbouncer_exporter/collector"
-	"github.com/jbub/pgbouncer_exporter/config"
+	"github.com/jbub/pgbouncer_exporter/internal/collector"
+	"github.com/jbub/pgbouncer_exporter/internal/config"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

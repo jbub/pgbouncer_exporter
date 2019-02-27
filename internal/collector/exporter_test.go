@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jbub/pgbouncer_exporter/config"
-	"github.com/jbub/pgbouncer_exporter/store"
+	"github.com/jbub/pgbouncer_exporter/internal/config"
+	"github.com/jbub/pgbouncer_exporter/internal/store"
 
 	"github.com/stretchr/testify/assert"
 )

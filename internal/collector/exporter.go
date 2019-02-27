@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/jbub/pgbouncer_exporter/config"
-	"github.com/jbub/pgbouncer_exporter/domain"
+	"github.com/jbub/pgbouncer_exporter/internal/config"
+	"github.com/jbub/pgbouncer_exporter/internal/domain"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/log"
 )

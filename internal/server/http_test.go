@@ -5,10 +5,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/jbub/pgbouncer_exporter/collector"
-	"github.com/jbub/pgbouncer_exporter/config"
-	"github.com/jbub/pgbouncer_exporter/domain"
-	"github.com/jbub/pgbouncer_exporter/store"
+	"github.com/jbub/pgbouncer_exporter/internal/collector"
+	"github.com/jbub/pgbouncer_exporter/internal/config"
+	"github.com/jbub/pgbouncer_exporter/internal/domain"
+	"github.com/jbub/pgbouncer_exporter/internal/store"
 
 	"github.com/prometheus/common/expfmt"
 	"github.com/stretchr/testify/assert"

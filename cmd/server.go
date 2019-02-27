@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/jbub/pgbouncer_exporter/collector"
-	"github.com/jbub/pgbouncer_exporter/config"
-	"github.com/jbub/pgbouncer_exporter/server"
-	"github.com/jbub/pgbouncer_exporter/store"
+	"github.com/jbub/pgbouncer_exporter/internal/collector"
+	"github.com/jbub/pgbouncer_exporter/internal/config"
+	"github.com/jbub/pgbouncer_exporter/internal/server"
+	"github.com/jbub/pgbouncer_exporter/internal/store"
 
 	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"
