@@ -1,8 +1,6 @@
 package collector
 
 import (
-	"os"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/version"
 )
@@ -11,7 +9,10 @@ import (
 func NewRegistry(exp *Exporter) prometheus.Gatherer {
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(version.NewCollector(Name))
-	reg.MustRegister(prometheus.NewProcessCollector(os.Getpid(), ""))
+	reg.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{
+		Namespace:    "",
+		ReportErrors: false,
+	}))
 	reg.MustRegister(prometheus.NewGoCollector())
 	reg.MustRegister(exp)
 	return reg
