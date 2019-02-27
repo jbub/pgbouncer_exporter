@@ -5,6 +5,19 @@
 
 Prometheus exporter for Pgbouncer metrics.
 
+## Docker
+
+Metrics are by default exposed on http server running on port `9127` under the `/metrics` path.
+
+```bash
+docker run \ 
+  --detach \ 
+  --env "DATABASE_URL=postgres://user:password@pgbouncer:6432/pgbouncer?sslmode=disable" \
+  --publish "9127:9127" \
+  --name "pgbouncer_exporter" \
+  jbub/pgbouncer_exporter
+```
+
 ## Collectors
 
 All of the collectors are enabled by default, you can control that using environment variables by settings
