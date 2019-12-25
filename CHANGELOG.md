@@ -1,3 +1,11 @@
+## 0.5.0
+
+* Build with Go 1.13.
+* Add docker compose for testing.
+* Update to github.com/urfave/cli/v2.
+* Bump github.com/prometheus/client_golang to v1.3.0. 
+* Bump github.com/lib/pq to v1.3.0.
+
 ## 0.4.0
 
 * Build with Go 1.12.
