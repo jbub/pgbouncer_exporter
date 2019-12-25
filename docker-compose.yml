@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: "postgres:12.1-alpine"
+    restart: always
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+
+  pgbouncer:
+    image: "tophfr/pgbouncer:1.12.0"
+    restart: always
+    environment:
+      DEFAULT_HOST: "postgres"
+      AUTH__POSTGRES: "postgres"
+      CONF__PGBOUNCER__POOL_MODE: "transaction"
+      CONF__PGBOUNCER__STATS_USERS: "postgres"
+      CONF__PGBOUNCER__IGNORE_STARTUP_PARAMETERS: "extra_float_digits"
+
+  pgbouncerexporter:
+    image: "jbub/pgbouncer_exporter:v0.4.0"
+    restart: always
+    ports:
+      - "9127:9127"
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@pgbouncer:5432/pgbouncer?sslmode=disable&binary_parameters=yes"
