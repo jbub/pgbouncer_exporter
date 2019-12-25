@@ -6,7 +6,7 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/config"
 	"github.com/jbub/pgbouncer_exporter/internal/store"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 // Health is a cli command used for checking the health of the system.

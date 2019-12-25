@@ -10,7 +10,7 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/prometheus/common/version"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {

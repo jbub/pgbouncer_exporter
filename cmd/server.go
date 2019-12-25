@@ -10,7 +10,7 @@ import (
 
 	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 // Server is a cli command used for running exporter http server.

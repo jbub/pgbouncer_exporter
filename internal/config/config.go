@@ -3,7 +3,7 @@ package config
 import (
 	"time"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func LoadFromCLI(ctx *cli.Context) Config {

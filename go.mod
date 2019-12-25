@@ -10,6 +10,6 @@ require (
 	github.com/prometheus/client_golang v1.3.0
 	github.com/prometheus/common v0.7.0
 	github.com/stretchr/testify v1.3.0
-	github.com/urfave/cli v0.0.0-20180128182452-d3ae77c26ac8
+	github.com/urfave/cli/v2 v2.1.0
 	google.golang.org/appengine v1.3.0 // indirect
 )
