@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Do not use draft release in goreleaser.
+
 ## 0.5.1
 
 * Use docker skip_push auto in goreleaser.
