@@ -1,3 +1,7 @@
+## 0.5.1
+
+* Use docker skip_push auto in goreleaser.
+
 ## 0.5.0
 
 * Build with Go 1.13.
