@@ -38,7 +38,8 @@ archives:
 snapshot:
   name_template: "SNAPSHOT-{{ .Commit }}"
 dockers:
-  - goos: linux
+  - skip_push: auto
+    goos: linux
     goarch: amd64
     binaries:
       - pgbouncer_exporter
