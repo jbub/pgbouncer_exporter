@@ -67,7 +67,7 @@ type list struct {
 
 // NewSQLStore returns new SQLStore.
 func NewSQLStore(dataSource string) (*SQLStore, error) {
-	db, err := sqlx.Connect("postgres", dataSource)
+	db, err := sqlx.Open("postgres", dataSource)
 	if err != nil {
 		return nil, err
 	}
