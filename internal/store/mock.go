@@ -51,7 +51,7 @@ func (s *MockStore) GetLists(ctx context.Context) ([]domain.List, error) {
 }
 
 // Check checks the health of the store.
-func (s *MockStore) Check() error {
+func (s *MockStore) Check(ctx context.Context) error {
 	s.CheckCalled = true
 	return nil
 }

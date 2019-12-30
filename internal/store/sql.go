@@ -65,8 +65,8 @@ type list struct {
 	Items int64  `db:"items"`
 }
 
-// NewSQLStore returns new SQLStore.
-func NewSQLStore(dataSource string) (*SQLStore, error) {
+// NewSQL returns a new SQLStore.
+func NewSQL(dataSource string) (*SQLStore, error) {
 	db, err := sqlx.Open("postgres", dataSource)
 	if err != nil {
 		return nil, err

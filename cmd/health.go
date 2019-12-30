@@ -19,7 +19,7 @@ var Health = &cli.Command{
 
 func checkHealth(ctx *cli.Context) error {
 	cfg := config.LoadFromCLI(ctx)
-	st, err := store.NewSQLStore(cfg.DatabaseURL)
+	st, err := store.NewSQL(cfg.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("unable to initialize store: %v", err)
 	}
