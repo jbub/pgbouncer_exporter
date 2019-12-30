@@ -17,11 +17,16 @@ services:
       CONF__PGBOUNCER__POOL_MODE: "transaction"
       CONF__PGBOUNCER__STATS_USERS: "postgres"
       CONF__PGBOUNCER__IGNORE_STARTUP_PARAMETERS: "extra_float_digits"
+    depends_on:
+      - postgres
 
   pgbouncerexporter:
-    image: "jbub/pgbouncer_exporter:v0.4.0"
+    build:
+      context: .
     restart: always
     ports:
       - "9127:9127"
     environment:
       DATABASE_URL: "postgres://postgres:postgres@pgbouncer:5432/pgbouncer?sslmode=disable&binary_parameters=yes"
+    depends_on:
+      - pgbouncer

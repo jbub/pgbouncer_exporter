@@ -1,18 +1,14 @@
-## 0.5.2
-
-* Do not use draft release in goreleaser.
-
-## 0.5.1
-
-* Use docker skip_push auto in goreleaser.
-
 ## 0.5.0
 
 * Build with Go 1.13.
+* Use sqlx.Open instead of sqlx.Connect to skip calling Ping.
+* Use custom query in store.Check.
+* Check store on startup.
 * Add docker compose for testing.
 * Update to github.com/urfave/cli/v2.
 * Bump github.com/prometheus/client_golang to v1.3.0. 
 * Bump github.com/lib/pq to v1.3.0.
+* Update goreleaser config to support latest version.
 
 ## 0.4.0
 
