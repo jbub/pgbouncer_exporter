@@ -25,18 +25,21 @@ const (
 	SubsystemLists     = "lists"
 )
 
-type gaugeVecItem struct {
-	gaugeVec *prometheus.GaugeVec
-	resolve  resolveGaugeVecFunc
-	enabled  bool
+var (
+	_ prometheus.Collector = &Exporter{}
+)
+
+type metric struct {
+	enabled bool
+	desc    *prometheus.Desc
+	valType prometheus.ValueType
+	eval    func(res *storeResult) []metricResult
 }
 
-type gaugeVecValueItem struct {
+type metricResult struct {
 	labels []string
-	count  float64
+	value  float64
 }
-
-type resolveGaugeVecFunc func(res *storeResult) []gaugeVecValueItem
 
 type storeResult struct {
 	stats     []domain.Stat
@@ -47,322 +50,339 @@ type storeResult struct {
 
 // Exporter represents pgbouncer prometheus stats exporter.
 type Exporter struct {
-	cfg           config.Config
-	st            domain.Store
-	mutex         sync.RWMutex // guards Collect
-	gaugeVecItems []gaugeVecItem
+	cfg     config.Config
+	stor    domain.Store
+	mut     sync.Mutex // guards Collect
+	metrics []metric
 }
 
 // New returns new Exporter.
-func New(cfg config.Config, st domain.Store) *Exporter {
+func New(cfg config.Config, stor domain.Store) *Exporter {
 	return &Exporter{
-		st:  st,
-		cfg: cfg,
-		gaugeVecItems: []gaugeVecItem{
+		stor: stor,
+		cfg:  cfg,
+		metrics: []metric{
 			{
 				enabled: cfg.ExportStats,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemStats,
-					Name:      "total_requests",
-					Help:      "Total number of SQL requests pooled by pgbouncer.",
-				}, []string{"database"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemStats, "total_requests"),
+					"Total number of SQL requests pooled by pgbouncer.",
+					[]string{"database"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, stat := range res.stats {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{stat.Database},
-							count:  float64(stat.TotalRequests),
+							value:  float64(stat.TotalRequests),
 						})
 					}
-					return items
-				},
-			},
-			{
-				enabled: cfg.ExportStats,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemStats,
-					Name:      "total_received",
-					Help:      "Total number of SQL requests pooled by pgbouncer.",
-				}, []string{"database"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
-					for _, stat := range res.stats {
-						items = append(items, gaugeVecValueItem{
-							labels: []string{stat.Database},
-							count:  float64(stat.TotalReceived),
-						})
-					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportStats,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemStats,
-					Name:      "total_sent",
-					Help:      "Total volume in bytes of network traffic sent by pgbouncer.",
-				}, []string{"database"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemStats, "total_received"),
+					"Total volume in bytes of network traffic received by pgbouncer.",
+					[]string{"database"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, stat := range res.stats {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{stat.Database},
-							count:  float64(stat.TotalSent),
+							value:  float64(stat.TotalReceived),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportStats,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemStats,
-					Name:      "total_query_time",
-					Help:      "Total number of microseconds spent by pgbouncer when actively connected to PostgreSQL.",
-				}, []string{"database"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemStats, "total_sent"),
+					"Total volume in bytes of network traffic sent by pgbouncer.",
+					[]string{"database"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, stat := range res.stats {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{stat.Database},
-							count:  float64(stat.TotalQueryTime),
+							value:  float64(stat.TotalSent),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportStats,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemStats,
-					Name:      "total_xact_time",
-					Help:      "Total number of microseconds spent by pgbouncer when connected to PostgreSQL in a transaction, either idle in transaction or executing queries.",
-				}, []string{"database"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemStats, "total_query_time"),
+					"Total number of microseconds spent by pgbouncer when actively connected to PostgreSQL.",
+					[]string{"database"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, stat := range res.stats {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{stat.Database},
-							count:  float64(stat.TotalXactTime),
+							value:  float64(stat.TotalQueryTime),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportStats,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemStats,
-					Name:      "total_query_count",
-					Help:      "Total number of SQL queries pooled by pgbouncer.",
-				}, []string{"database"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemStats, "total_xact_time"),
+					"Total number of microseconds spent by pgbouncer when connected to PostgreSQL in a transaction, either idle in transaction or executing queries.",
+					[]string{"database"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, stat := range res.stats {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{stat.Database},
-							count:  float64(stat.TotalQueryCount),
+							value:  float64(stat.TotalXactTime),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportStats,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemStats,
-					Name:      "total_xact_count",
-					Help:      "Total number of SQL transactions pooled by pgbouncer.",
-				}, []string{"database"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemStats, "total_query_count"),
+					"Total number of SQL queries pooled by pgbouncer.",
+					[]string{"database"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, stat := range res.stats {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{stat.Database},
-							count:  float64(stat.TotalXactCount),
+							value:  float64(stat.TotalQueryCount),
 						})
 					}
-					return items
+					return results
+				},
+			},
+			{
+				enabled: cfg.ExportStats,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemStats, "total_xact_count"),
+					"Total number of SQL transactions pooled by pgbouncer.",
+					[]string{"database"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					for _, stat := range res.stats {
+						results = append(results, metricResult{
+							labels: []string{stat.Database},
+							value:  float64(stat.TotalXactCount),
+						})
+					}
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "active_clients",
-					Help:      "Client connections that are linked to server connection and can process queries.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "active_clients"),
+					"Client connections that are linked to server connection and can process queries.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.Active),
+							value:  float64(pool.Active),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "waiting_clients",
-					Help:      "Client connections have sent queries but have not yet got a server connection.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "waiting_clients"),
+					"Client connections have sent queries but have not yet got a server connection.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.Waiting),
+							value:  float64(pool.Waiting),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "active_server",
-					Help:      "Server connections that linked to client.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "active_server"),
+					"Server connections that are linked to a client.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.ServerActive),
+							value:  float64(pool.ServerActive),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "idle_server",
-					Help:      "Server connections that unused and immediately usable for client queries.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "idle_server"),
+					"Server connections that are unused and immediately usable for client queries.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.ServerIdle),
+							value:  float64(pool.ServerIdle),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "used_server",
-					Help:      "Server connections that have been idle more than server_check_delay, so they needs server_check_query to run on it before it can be used.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "used_server"),
+					"Server connections that have been idle for more than server_check_delay, so they need server_check_query to run on them before they can be used again.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.ServerUsed),
+							value:  float64(pool.ServerUsed),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "tested_server",
-					Help:      "Server connections that are currently running either server_reset_query or server_check_query.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "tested_server"),
+					"Server connections that are currently running either server_reset_query or server_check_query.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.ServerTested),
+							value:  float64(pool.ServerTested),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "login_server",
-					Help:      "Server connections currently in logging in process.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "login_server"),
+					"Server connections currently in the process of logging in.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.ServerLogin),
+							value:  float64(pool.ServerLogin),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportPools,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemPools,
-					Name:      "max_wait",
-					Help:      "How long the first (oldest) client in queue has waited, in seconds. If this starts increasing, then the current pool of servers does not handle requests quick enough. Reason may be either overloaded server or just too small of a pool_size setting.",
-				}, []string{"database", "user", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemPools, "max_wait"),
+					"How long the first (oldest) client in the queue has waited, in seconds. If this starts increasing, then the current pool of servers does not handle requests quickly enough. The reason may be either an overloaded server or just too small of a pool_size setting.",
+					[]string{"database", "user", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, pool := range res.pools {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{pool.Database, pool.User, pool.PoolMode},
-							count:  float64(pool.MaxWait),
+							value:  float64(pool.MaxWait),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportDatabases,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemDatabases,
-					Name:      "current_connections",
-					Help:      "Current number of connections.",
-				}, []string{"name", "pool_mode"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemDatabases, "current_connections"),
+					"Current number of connections for this database.",
+					[]string{"name", "pool_mode"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, database := range res.databases {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{database.Name, database.PoolMode},
-							count:  float64(database.CurrentConnections),
+							value:  float64(database.CurrentConnections),
 						})
 					}
-					return items
+					return results
 				},
 			},
 			{
 				enabled: cfg.ExportLists,
-				gaugeVec: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: Name,
-					Subsystem: SubsystemLists,
-					Name:      "items",
-					Help:      "List of internal pgbouncer information.",
-				}, []string{"list"}),
-				resolve: func(res *storeResult) (items []gaugeVecValueItem) {
+				desc: prometheus.NewDesc(
+					fqName(SubsystemLists, "items"),
+					"List of internal pgbouncer information.",
+					[]string{"list"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
 					for _, list := range res.lists {
-						items = append(items, gaugeVecValueItem{
+						results = append(results, metricResult{
 							labels: []string{list.List},
-							count:  float64(list.Items),
+							value:  float64(list.Items),
 						})
 					}
-					return items
+					return results
 				},
 			},
 		},
@@ -371,38 +391,43 @@ func New(cfg config.Config, st domain.Store) *Exporter {
 
 // Describe implements prometheus Collector.Describe.
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	for _, gaugeVecItem := range e.gaugeVecItems {
-		if gaugeVecItem.enabled {
-			gaugeVecItem.gaugeVec.Describe(ch)
+	for _, met := range e.metrics {
+		if !met.enabled {
+			continue
 		}
+		ch <- met.desc
 	}
 }
 
 // Collect implements prometheus Collector.Collect.
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
-	e.mutex.Lock()
-	defer e.mutex.Unlock()
+	e.mut.Lock()
+	defer e.mut.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), e.cfg.StoreTimeout)
 	defer cancel()
 
 	res, err := e.getStoreResult(ctx)
 	if err != nil {
-		log.Errorf("unable to get store result: %v", err)
+		log.Errorf("could not get store result: %v", err)
 		return
 	}
 
-	for _, gaugeVecItem := range e.gaugeVecItems {
-		if !gaugeVecItem.enabled {
+	for _, met := range e.metrics {
+		if !met.enabled {
 			continue
 		}
 
-		items := gaugeVecItem.resolve(res)
-		for _, item := range items {
-			gaugeVecItem.gaugeVec.WithLabelValues(item.labels...).Set(item.count)
-		}
+		results := met.eval(res)
 
-		gaugeVecItem.gaugeVec.Collect(ch)
+		for _, res := range results {
+			ch <- prometheus.MustNewConstMetric(
+				met.desc,
+				met.valType,
+				res.value,
+				res.labels...,
+			)
+		}
 	}
 }
 
@@ -410,7 +435,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	res := new(storeResult)
 
 	if e.cfg.ExportStats {
-		stats, err := e.st.GetStats(ctx)
+		stats, err := e.stor.GetStats(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("unable to get stats: %v", err)
 		}
@@ -418,7 +443,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	}
 
 	if e.cfg.ExportPools {
-		pools, err := e.st.GetPools(ctx)
+		pools, err := e.stor.GetPools(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("unable to get pools: %v", err)
 		}
@@ -426,7 +451,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	}
 
 	if e.cfg.ExportDatabases {
-		databases, err := e.st.GetDatabases(ctx)
+		databases, err := e.stor.GetDatabases(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("unable to get databases: %v", err)
 		}
@@ -434,7 +459,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	}
 
 	if e.cfg.ExportLists {
-		lists, err := e.st.GetLists(ctx)
+		lists, err := e.stor.GetLists(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("unable to get lists: %v", err)
 		}
@@ -442,4 +467,8 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	}
 
 	return res, nil
+}
+
+func fqName(subsystem string, name string) string {
+	return prometheus.BuildFQName(Name, subsystem, name)
 }
