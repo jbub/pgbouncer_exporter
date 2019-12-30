@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/jbub/pgbouncer_exporter/internal/config"
@@ -24,7 +25,10 @@ func checkHealth(ctx *cli.Context) error {
 	}
 	defer st.Close()
 
-	if err := st.Check(); err != nil {
+	checkCtx, cancel := context.WithTimeout(context.Background(), cfg.StoreTimeout)
+	defer cancel()
+
+	if err := st.Check(checkCtx); err != nil {
 		return fmt.Errorf("store health check failed: %v", err)
 	}
 	return nil
