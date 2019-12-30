@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/jbub/pgbouncer_exporter/internal/collector"
@@ -27,6 +28,13 @@ func runServer(ctx *cli.Context) error {
 		return fmt.Errorf("unable to initialize store: %v", err)
 	}
 	defer st.Close()
+
+	checkCtx, cancel := context.WithTimeout(context.Background(), cfg.StoreTimeout)
+	defer cancel()
+
+	if err := st.Check(checkCtx); err != nil {
+		return fmt.Errorf("could not check store: %v", err)
+	}
 
 	exp := collector.New(cfg, st)
 	srv := server.New(cfg, exp)
