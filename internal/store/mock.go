@@ -17,11 +17,15 @@ type MockStore struct {
 	Pools     []domain.Pool
 	Databases []domain.Database
 	Lists     []domain.List
+	Servers   []domain.Server
+	Clients   []domain.Client
 
 	StatsCalled     bool
 	PoolsCalled     bool
 	DatabasesCalled bool
 	ListsCalled     bool
+	ServersCalled   bool
+	ClientsCalled   bool
 	CloseCalled     bool
 	CheckCalled     bool
 }
@@ -48,6 +52,18 @@ func (s *MockStore) GetDatabases(ctx context.Context) ([]domain.Database, error)
 func (s *MockStore) GetLists(ctx context.Context) ([]domain.List, error) {
 	s.ListsCalled = true
 	return s.Lists, nil
+}
+
+// GetServers returns servers.
+func (s *MockStore) GetServers(ctx context.Context) ([]domain.Server, error) {
+	s.ServersCalled = true
+	return s.Servers, nil
+}
+
+// GetClients returns clients.
+func (s *MockStore) GetClients(ctx context.Context) ([]domain.Client, error) {
+	s.ClientsCalled = true
+	return s.Clients, nil
 }
 
 // Check checks the health of the store.

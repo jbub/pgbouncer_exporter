@@ -23,6 +23,8 @@ const (
 	SubsystemPools     = "pools"
 	SubsystemDatabases = "database"
 	SubsystemLists     = "lists"
+	SubsystemServers   = "servers"
+	SubsystemClients   = "clients"
 )
 
 var (
@@ -46,6 +48,8 @@ type storeResult struct {
 	pools     []domain.Pool
 	databases []domain.Database
 	lists     []domain.List
+	servers   []domain.Server
+	clients   []domain.Client
 }
 
 // Exporter represents pgbouncer prometheus stats exporter.
@@ -385,6 +389,97 @@ func New(cfg config.Config, stor domain.Store) *Exporter {
 					return results
 				},
 			},
+			{
+				enabled: cfg.ExportServers,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemServers, "active"),
+					"Active servers.",
+					[]string{"database", "user"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findServerResults(res.servers, "active")
+				},
+			},
+			{
+				enabled: cfg.ExportServers,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemServers, "used"),
+					"Used servers.",
+					[]string{"database", "user"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findServerResults(res.servers, "used")
+				},
+			},
+			{
+				enabled: cfg.ExportServers,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemServers, "idle"),
+					"Idle servers.",
+					[]string{"database", "user"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findServerResults(res.servers, "idle")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "active"),
+					"Active clients.",
+					[]string{"database", "user"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "active")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "used"),
+					"Used clients.",
+					[]string{"database", "user"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "used")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "waiting"),
+					"Waiting clients.",
+					[]string{"database", "user"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "waiting")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "idle"),
+					"Idle clients.",
+					[]string{"database", "user"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "idle")
+				},
+			},
 		},
 	}
 }
@@ -466,9 +561,51 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 		res.lists = lists
 	}
 
+	if e.cfg.ExportServers {
+		servers, err := e.stor.GetServers(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get servers: %v", err)
+		}
+		res.servers = servers
+	}
+
+	if e.cfg.ExportClients {
+		clients, err := e.stor.GetClients(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get clients: %v", err)
+		}
+		res.clients = clients
+	}
+
 	return res, nil
 }
 
 func fqName(subsystem string, name string) string {
 	return prometheus.BuildFQName(Name, subsystem, name)
+}
+
+func findServerResults(servers []domain.Server, state string) []metricResult {
+	var results = []metricResult{}
+	for _, server := range servers {
+		if server.State == state {
+			results = append(results, metricResult{
+				labels: []string{server.Database, server.User},
+				value:  1.0,
+			})
+		}
+	}
+	return results
+}
+
+func findClientResults(clients []domain.Client, state string) []metricResult {
+	var results = []metricResult{}
+	for _, client := range clients {
+		if client.State == state {
+			results = append(results, metricResult{
+				labels: []string{client.Database, client.User},
+				value:  1.0,
+			})
+		}
+	}
+	return results
 }

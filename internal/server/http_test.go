@@ -25,6 +25,8 @@ var (
 		exportDatabases bool
 		exportStats     bool
 		exportLists     bool
+		exportServers   bool
+		exportClients   bool
 		metrics         []string
 	}{
 		{
@@ -61,6 +63,27 @@ var (
 			metrics: []string{
 				buildInfoMetric,
 				metricName(collector.SubsystemLists, "items"),
+			},
+		},
+		{
+			name:          "servers",
+			exportServers: true,
+			metrics: []string{
+				buildInfoMetric,
+				metricName(collector.SubsystemServers, "active"),
+				metricName(collector.SubsystemServers, "used"),
+				metricName(collector.SubsystemServers, "idle"),
+			},
+		},
+		{
+			name:          "clients",
+			exportClients: true,
+			metrics: []string{
+				buildInfoMetric,
+				metricName(collector.SubsystemClients, "active"),
+				metricName(collector.SubsystemClients, "used"),
+				metricName(collector.SubsystemClients, "waiting"),
+				metricName(collector.SubsystemClients, "idle"),
 			},
 		},
 	}
@@ -124,6 +147,45 @@ func newTestingStore() *store.MockStore {
 			Items: 68,
 		},
 	}
+	st.Servers = []domain.Server{
+		{
+			User:     "xx1",
+			Database: "xx",
+			State:    "active",
+		},
+		{
+			User:     "xx2",
+			Database: "xx",
+			State:    "used",
+		},
+		{
+			User:     "yy1",
+			Database: "yy",
+			State:    "idle",
+		},
+	}
+	st.Clients = []domain.Client{
+		{
+			User:     "xx1",
+			Database: "xx",
+			State:    "active",
+		},
+		{
+			User:     "xx2",
+			Database: "xx",
+			State:    "used",
+		},
+		{
+			User:     "yy1",
+			Database: "yy",
+			State:    "waiting",
+		},
+		{
+			User:     "yy2",
+			Database: "yy",
+			State:    "idle",
+		},
+	}
 	return st
 }
 
@@ -144,6 +206,8 @@ func TestResponseContainsMetrics(t *testing.T) {
 				ExportDatabases: testCase.exportDatabases,
 				ExportStats:     testCase.exportStats,
 				ExportLists:     testCase.exportLists,
+				ExportServers:   testCase.exportServers,
+				ExportClients:   testCase.exportClients,
 			}
 
 			st := newTestingStore()
@@ -171,6 +235,12 @@ func TestResponseContainsMetrics(t *testing.T) {
 			}
 			if cfg.ExportLists {
 				assert.True(t, st.ListsCalled)
+			}
+			if cfg.ExportServers {
+				assert.True(t, st.ServersCalled)
+			}
+			if cfg.ExportClients {
+				assert.True(t, st.ClientsCalled)
 			}
 
 			for _, expMetric := range testCase.metrics {
