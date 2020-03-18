@@ -64,6 +64,20 @@ type List struct {
 	Items int64
 }
 
+// Server represents server row.
+type Server struct {
+	Database        string
+	State           string
+	ApplicationName string
+}
+
+// Client represents client row.
+type Client struct {
+	Database        string
+	State           string
+	ApplicationName string
+}
+
 // Store defines interface for accessing pgbouncer stats.
 type Store interface {
 	// GetStats returns stats.
@@ -77,6 +91,12 @@ type Store interface {
 
 	// GetLists returns lists.
 	GetLists(ctx context.Context) ([]List, error)
+
+	// GetServers returns servers.
+	GetServers(ctx context.Context) ([]Server, error)
+
+	// GetClients returns clients.
+	GetClients(ctx context.Context) ([]Client, error)
 
 	// Check checks the health of the store.
 	Check(ctx context.Context) error
