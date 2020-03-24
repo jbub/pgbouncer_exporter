@@ -59,6 +59,18 @@ func main() {
 				EnvVars: []string{"EXPORT_LISTS"},
 				Value:   true,
 			},
+			&cli.BoolFlag{
+				Name:    "export-servers",
+				Usage:   "Export servers.",
+				EnvVars: []string{"EXPORT_SERVERS"},
+				Value:   true,
+			},
+			&cli.BoolFlag{
+				Name:    "export-clients",
+				Usage:   "Export clients.",
+				EnvVars: []string{"EXPORT_CLIENTS"},
+				Value:   true,
+			},
 			&cli.DurationFlag{
 				Name:    "store-timeout",
 				Usage:   "Per method store timeout.",

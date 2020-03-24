@@ -3,6 +3,7 @@ package collector
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/jbub/pgbouncer_exporter/internal/config"
@@ -23,6 +24,8 @@ const (
 	SubsystemPools     = "pools"
 	SubsystemDatabases = "database"
 	SubsystemLists     = "lists"
+	SubsystemServers   = "servers"
+	SubsystemClients   = "clients"
 )
 
 var (
@@ -46,6 +49,8 @@ type storeResult struct {
 	pools     []domain.Pool
 	databases []domain.Database
 	lists     []domain.List
+	servers   []domain.Server
+	clients   []domain.Client
 }
 
 // Exporter represents pgbouncer prometheus stats exporter.
@@ -385,6 +390,97 @@ func New(cfg config.Config, stor domain.Store) *Exporter {
 					return results
 				},
 			},
+			{
+				enabled: cfg.ExportServers,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemServers, "active"),
+					"Active servers grouped by application name and database.",
+					[]string{"database", "application_name"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findServerResults(res.servers, "active")
+				},
+			},
+			{
+				enabled: cfg.ExportServers,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemServers, "used"),
+					"Used servers grouped by application name and database.",
+					[]string{"database", "application_name"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findServerResults(res.servers, "used")
+				},
+			},
+			{
+				enabled: cfg.ExportServers,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemServers, "idle"),
+					"Idle servers grouped by application name and database.",
+					[]string{"database", "application_name"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findServerResults(res.servers, "idle")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "active"),
+					"Active clients grouped by application name and database.",
+					[]string{"database", "application_name"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "active")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "used"),
+					"Used clients grouped by application name and database.",
+					[]string{"database", "application_name"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "used")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "waiting"),
+					"Waiting clients grouped by application name and database.",
+					[]string{"database", "application_name"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "waiting")
+				},
+			},
+			{
+				enabled: cfg.ExportClients,
+				desc: prometheus.NewDesc(
+					fqName(SubsystemClients, "idle"),
+					"Idle clients grouped by application name and database.",
+					[]string{"database", "application_name"},
+					nil,
+				),
+				valType: prometheus.GaugeValue,
+				eval: func(res *storeResult) (results []metricResult) {
+					return findClientResults(res.clients, "idle")
+				},
+			},
 		},
 	}
 }
@@ -466,9 +562,61 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 		res.lists = lists
 	}
 
+	if e.cfg.ExportServers {
+		servers, err := e.stor.GetServers(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get servers: %v", err)
+		}
+		res.servers = servers
+	}
+
+	if e.cfg.ExportClients {
+		clients, err := e.stor.GetClients(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get clients: %v", err)
+		}
+		res.clients = clients
+	}
+
 	return res, nil
 }
 
 func fqName(subsystem string, name string) string {
 	return prometheus.BuildFQName(Name, subsystem, name)
+}
+
+func findServerResults(servers []domain.Server, state string) []metricResult {
+	var results = []metricResult{}
+	counts := make(map[string]float64)
+	for _, server := range servers {
+		if server.State == state {
+			counts[fmt.Sprintf("%s;%s", server.Database, server.ApplicationName)] += 1.0
+		}
+	}
+	for dbNamePair, count := range counts {
+		dbAppNames := strings.Split(dbNamePair, ";")
+		results = append(results, metricResult{
+			labels: []string{dbAppNames[0], dbAppNames[1]},
+			value:  count,
+		})
+	}
+	return results
+}
+
+func findClientResults(clients []domain.Client, state string) []metricResult {
+	var results = []metricResult{}
+	counts := make(map[string]float64)
+	for _, client := range clients {
+		if client.State == state {
+			counts[fmt.Sprintf("%s;%s", client.Database, client.ApplicationName)] += 1.0
+		}
+	}
+	for dbNamePair, count := range counts {
+		dbAppNames := strings.Split(dbNamePair, ";")
+		results = append(results, metricResult{
+			labels: []string{dbAppNames[0], dbAppNames[1]},
+			value:  count,
+		})
+	}
+	return results
 }

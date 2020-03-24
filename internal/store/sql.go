@@ -65,6 +65,48 @@ type list struct {
 	Items int64  `db:"items"`
 }
 
+type server struct {
+	Type            string         `db:"type"`
+	User            string         `db:"user"`
+	Database        string         `db:"database"`
+	State           string         `db:"state"`
+	Addr            string         `db:"addr"`
+	Port            int64          `db:"port"`
+	LocalAddr       string         `db:"local_addr"`
+	LocalPort       int64          `db:"local_port"`
+	ConnectTime     string         `db:"connect_time"`
+	RequestTime     string         `db:"request_time"`
+	Wait            int64          `db:"wait"`
+	WaitUs          int64          `db:"wait_us"`
+	CloseNeeded     int64          `db:"close_needed"`
+	Ptr             string         `db:"ptr"`
+	Link            string         `db:"link"`
+	RemotePid       string         `db:"remote_pid"`
+	Tls             string         `db:"tls"`
+	ApplicationName sql.NullString `db:"application_name"`
+}
+
+type client struct {
+	Type            string         `db:"type"`
+	User            string         `db:"user"`
+	Database        string         `db:"database"`
+	State           string         `db:"state"`
+	Addr            string         `db:"addr"`
+	Port            int64          `db:"port"`
+	LocalAddr       string         `db:"local_addr"`
+	LocalPort       int64          `db:"local_port"`
+	ConnectTime     string         `db:"connect_time"`
+	RequestTime     string         `db:"request_time"`
+	Wait            int64          `db:"wait"`
+	WaitUs          int64          `db:"wait_us"`
+	CloseNeeded     int64          `db:"close_needed"`
+	Ptr             string         `db:"ptr"`
+	Link            string         `db:"link"`
+	RemotePid       string         `db:"remote_pid"`
+	Tls             string         `db:"tls"`
+	ApplicationName sql.NullString `db:"application_name"`
+}
+
 // NewSQL returns a new SQLStore.
 func NewSQL(dataSource string) (*SQLStore, error) {
 	db, err := sqlx.Open("postgres", dataSource)
@@ -153,6 +195,40 @@ func (s *SQLStore) GetLists(ctx context.Context) ([]domain.List, error) {
 	var result []domain.List
 	for _, row := range lists {
 		result = append(result, domain.List(row))
+	}
+	return result, nil
+}
+
+// GetServers returns servers.
+func (s *SQLStore) GetServers(ctx context.Context) ([]domain.Server, error) {
+	var servers []server
+	if err := s.db.SelectContext(ctx, &servers, "SHOW SERVERS"); err != nil {
+		return nil, err
+	}
+	var result []domain.Server
+	for _, row := range servers {
+		result = append(result, domain.Server{
+			Database:        row.Database,
+			State:           row.State,
+			ApplicationName: row.ApplicationName.String,
+		})
+	}
+	return result, nil
+}
+
+// GetClients returns servers.
+func (s *SQLStore) GetClients(ctx context.Context) ([]domain.Client, error) {
+	var clients []client
+	if err := s.db.SelectContext(ctx, &clients, "SHOW CLIENTS"); err != nil {
+		return nil, err
+	}
+	var result []domain.Client
+	for _, row := range clients {
+		result = append(result, domain.Client{
+			Database:        row.Database,
+			State:           row.State,
+			ApplicationName: row.ApplicationName.String,
+		})
 	}
 	return result, nil
 }
