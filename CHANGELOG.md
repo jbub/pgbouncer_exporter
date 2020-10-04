@@ -1,3 +1,9 @@
+## 0.6.0
+
+* Refactor exporter to use NewConstMetric.
+* Build with Go 1.15.
+* Bump dependencies.
+
 ## 0.5.0
 
 * Build with Go 1.13.
