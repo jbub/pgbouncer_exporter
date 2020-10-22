@@ -65,6 +65,11 @@ func main() {
 				EnvVars: []string{"STORE_TIMEOUT"},
 				Value:   time.Second * 2,
 			},
+			&cli.StringFlag{
+				Name:    "default-labels",
+				Usage:   "Default prometheus labels applied to all metrics. Format: label1=value1 label2=value2",
+				EnvVars: []string{"DEFAULT_LABELS"},
+			},
 		},
 		Commands: []*cli.Command{
 			cmd.Server,

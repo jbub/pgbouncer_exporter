@@ -7,7 +7,8 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/config"
 	"github.com/jbub/pgbouncer_exporter/internal/store"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetStoreResultExportEnabled(t *testing.T) {
@@ -24,17 +25,17 @@ func TestGetStoreResultExportEnabled(t *testing.T) {
 	ctx := context.Background()
 
 	res, err := exp.getStoreResult(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
-	assert.True(t, st.StatsCalled)
-	assert.True(t, st.PoolsCalled)
-	assert.True(t, st.DatabasesCalled)
-	assert.True(t, st.ListsCalled)
+	require.True(t, st.StatsCalled)
+	require.True(t, st.PoolsCalled)
+	require.True(t, st.DatabasesCalled)
+	require.True(t, st.ListsCalled)
 
-	assert.Equal(t, res.stats, st.Stats)
-	assert.Equal(t, res.pools, st.Pools)
-	assert.Equal(t, res.databases, st.Databases)
-	assert.Equal(t, res.lists, st.Lists)
+	require.Equal(t, res.stats, st.Stats)
+	require.Equal(t, res.pools, st.Pools)
+	require.Equal(t, res.databases, st.Databases)
+	require.Equal(t, res.lists, st.Lists)
 }
 
 func TestGetStoreResultExportDisabled(t *testing.T) {
@@ -51,15 +52,65 @@ func TestGetStoreResultExportDisabled(t *testing.T) {
 	ctx := context.Background()
 
 	res, err := exp.getStoreResult(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
-	assert.False(t, st.StatsCalled)
-	assert.False(t, st.PoolsCalled)
-	assert.False(t, st.DatabasesCalled)
-	assert.False(t, st.ListsCalled)
+	require.False(t, st.StatsCalled)
+	require.False(t, st.PoolsCalled)
+	require.False(t, st.DatabasesCalled)
+	require.False(t, st.ListsCalled)
 
-	assert.Equal(t, res.stats, st.Stats)
-	assert.Equal(t, res.pools, st.Pools)
-	assert.Equal(t, res.databases, st.Databases)
-	assert.Equal(t, res.lists, st.Lists)
+	require.Equal(t, res.stats, st.Stats)
+	require.Equal(t, res.pools, st.Pools)
+	require.Equal(t, res.databases, st.Databases)
+	require.Equal(t, res.lists, st.Lists)
+}
+
+var (
+	parseLabelsCases = []struct {
+		name     string
+		value    string
+		expected prometheus.Labels
+	}{
+		{
+			name:     "empty",
+			value:    "",
+			expected: nil,
+		},
+		{
+			name:     "invalid item",
+			value:    "key",
+			expected: prometheus.Labels{},
+		},
+		{
+			name:  "blank item",
+			value: "key=",
+			expected: prometheus.Labels{
+				"key": "",
+			},
+		},
+		{
+			name:  "single item",
+			value: "key=value",
+			expected: prometheus.Labels{
+				"key": "value",
+			},
+		},
+		{
+			name:  "multiple items",
+			value: "key=value key2=value2",
+			expected: prometheus.Labels{
+				"key":  "value",
+				"key2": "value2",
+			},
+		},
+	}
+)
+
+func TestParseLabels(t *testing.T) {
+	for _, cs := range parseLabelsCases {
+		t.Run(cs.name, func(t *testing.T) {
+			labels := parseLabels(cs.value)
+			require.Equal(t, cs.expected, labels)
+		})
+	}
 }

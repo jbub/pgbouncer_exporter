@@ -16,6 +16,7 @@ func LoadFromCLI(ctx *cli.Context) Config {
 		ExportPools:     ctx.Bool("export-pools"),
 		ExportDatabases: ctx.Bool("export-databases"),
 		ExportLists:     ctx.Bool("export-lists"),
+		DefaultLabels:   ctx.String("default-labels"),
 	}
 }
 
@@ -30,4 +31,5 @@ type Config struct {
 	ExportPools     bool
 	ExportDatabases bool
 	ExportLists     bool
+	DefaultLabels   string
 }

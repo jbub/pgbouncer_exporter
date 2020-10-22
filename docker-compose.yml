@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    image: "postgres:12.1-alpine"
+    image: "postgres:12.3-alpine"
     restart: always
     environment:
       POSTGRES_USER: "postgres"
@@ -28,5 +28,6 @@ services:
       - "9127:9127"
     environment:
       DATABASE_URL: "postgres://postgres:postgres@pgbouncer:5432/pgbouncer?sslmode=disable&binary_parameters=yes"
+      DEFAULT_LABELS: "instance=pg1 env=dev"
     depends_on:
       - pgbouncer

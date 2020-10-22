@@ -11,7 +11,7 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/store"
 
 	"github.com/prometheus/common/expfmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -154,28 +154,28 @@ func TestResponseContainsMetrics(t *testing.T) {
 
 			client := srv.Client()
 			resp, err := client.Get(srv.URL + cfg.TelemetryPath)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			defer resp.Body.Close()
 
 			metrics, err := parser.TextToMetricFamilies(resp.Body)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			if cfg.ExportPools {
-				assert.True(t, st.PoolsCalled)
+				require.True(t, st.PoolsCalled)
 			}
 			if cfg.ExportStats {
-				assert.True(t, st.StatsCalled)
+				require.True(t, st.StatsCalled)
 			}
 			if cfg.ExportDatabases {
-				assert.True(t, st.DatabasesCalled)
+				require.True(t, st.DatabasesCalled)
 			}
 			if cfg.ExportLists {
-				assert.True(t, st.ListsCalled)
+				require.True(t, st.ListsCalled)
 			}
 
 			for _, expMetric := range testCase.metrics {
 				if _, ok := metrics[expMetric]; !ok {
-					assert.FailNow(t, "metric not found", expMetric)
+					require.FailNow(t, "metric not found", expMetric)
 				}
 			}
 		})
