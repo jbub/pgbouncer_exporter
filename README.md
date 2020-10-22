@@ -36,6 +36,11 @@ it to `true` or `false`.
 | databases     | List of configured databases.           | EXPORT_DATABASES | Enabled |
 | lists         | List of internal pgbouncer information. | EXPORT_LISTS     | Enabled |
 
+## Default constant prometheus labels
+
+In order to provide default prometheus constant labels you can use the `DEFAULT_LABELS` enviroment variable.
+Labels can be set in this format `instance=pg1 env=dev`. Provided labels will be added to all the metrics. 
+
 [drone]: https://cloud.drone.io/jbub/pgbouncer_exporter
 [hub]: https://hub.docker.com/r/jbub/pgbouncer_exporter
 [goreportcard]: https://goreportcard.com/report/github.com/jbub/pgbouncer_exporter

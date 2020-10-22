@@ -1,3 +1,8 @@
+## 0.7.0
+
+* Add support for default constant prometheus labels.
+* Bump github.com/prometheus/client_golang to v1.8.0.
+
 ## 0.6.0
 
 * Refactor exporter to use NewConstMetric.
