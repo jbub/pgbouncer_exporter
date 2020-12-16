@@ -1,6 +1,6 @@
 ## 0.8.0
 
-* Use alpine:3.12 a base Docker image.
+* Use alpine:3.12 as a base Docker image.
 
 ## 0.7.0
 
