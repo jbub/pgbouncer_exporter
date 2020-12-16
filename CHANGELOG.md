@@ -1,3 +1,7 @@
+## 0.8.0
+
+* Use alpine:3.12 a base Docker image.
+
 ## 0.7.0
 
 * Add support for default constant prometheus labels.
