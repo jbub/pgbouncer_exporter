@@ -1,5 +1,7 @@
-FROM iron/go
-MAINTAINER Juraj Bubniak <juraj.bubniak@gmail.com>
+FROM alpine:3.12
+LABEL maintainer="Juraj Bubniak <juraj.bubniak@gmail.com>"
+
+RUN apk --no-cache add tzdata ca-certificates
 
 COPY pgbouncer_exporter /bin
 
