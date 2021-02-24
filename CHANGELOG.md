@@ -1,3 +1,9 @@
+## 0.9.0
+
+* Build with Go 1.16.
+* Build also arm64 goarch.
+* Bump packages.
+
 ## 0.8.0
 
 * Use alpine:3.12 as a base Docker image.
