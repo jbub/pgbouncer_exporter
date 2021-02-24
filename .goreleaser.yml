@@ -22,6 +22,7 @@ builds:
       - windows
     goarch:
       - amd64
+      - arm64
       - 386
 archives:
   - id: release
@@ -40,7 +41,7 @@ dockers:
   - skip_push: auto
     goos: linux
     goarch: amd64
-    binaries:
+    ids:
       - pgbouncer_exporter
     image_templates:
       - "jbub/pgbouncer_exporter:latest"
