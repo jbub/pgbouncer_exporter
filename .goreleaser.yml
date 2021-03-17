@@ -22,6 +22,7 @@ builds:
       - windows
     goarch:
       - amd64
+      - arm
       - arm64
       - 386
 archives:
@@ -38,11 +39,37 @@ archives:
 snapshot:
   name_template: "SNAPSHOT-{{ .Commit }}"
 dockers:
-  - skip_push: auto
-    goos: linux
-    goarch: amd64
-    ids:
-      - pgbouncer_exporter
-    image_templates:
-      - "jbub/pgbouncer_exporter:latest"
+  - image_templates:
       - "jbub/pgbouncer_exporter:{{ .Tag }}"
+    dockerfile: Dockerfile
+    use_buildx: true
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/amd64"
+  - image_templates:
+      - "jbub/pgbouncer_exporter:{{ .Tag }}-arm64"
+    dockerfile: Dockerfile
+    use_buildx: true
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/arm64"
+    goarch: arm64
+docker_manifests:
+  - name_template: 'jbub/pgbouncer_exporter:{{ .Tag }}'
+    image_templates:
+      - 'jbub/pgbouncer_exporter:{{ .Tag }}'
+      - 'jbub/pgbouncer_exporter:{{ .Tag }}-arm64'
+  - name_template: 'jbub/pgbouncer_exporter:latest'
+    image_templates:
+      - 'jbub/pgbouncer_exporter:{{ .Tag }}'
+      - 'jbub/pgbouncer_exporter:{{ .Tag }}-arm64'

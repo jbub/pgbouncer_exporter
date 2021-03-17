@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Use multiarch docker build to support both amd64 and arm64 platforms.
+
 ## 0.9.0
 
 * Build with Go 1.16.
