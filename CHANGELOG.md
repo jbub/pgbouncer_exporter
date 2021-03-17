@@ -1,3 +1,7 @@
+## 0.9.2
+
+* Fix docker image templates.
+
 ## 0.9.1
 
 * Use multiarch docker build to support both amd64 and arm64 platforms.

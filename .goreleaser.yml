@@ -41,6 +41,7 @@ snapshot:
 dockers:
   - image_templates:
       - "jbub/pgbouncer_exporter:{{ .Tag }}"
+      - "jbub/pgbouncer_exporter:latest"
     dockerfile: Dockerfile
     use_buildx: true
     build_flag_templates:
@@ -53,6 +54,7 @@ dockers:
       - "--platform=linux/amd64"
   - image_templates:
       - "jbub/pgbouncer_exporter:{{ .Tag }}-arm64"
+      - "jbub/pgbouncer_exporter:latest-arm64"
     dockerfile: Dockerfile
     use_buildx: true
     build_flag_templates:
@@ -66,10 +68,6 @@ dockers:
     goarch: arm64
 docker_manifests:
   - name_template: 'jbub/pgbouncer_exporter:{{ .Tag }}'
-    image_templates:
-      - 'jbub/pgbouncer_exporter:{{ .Tag }}'
-      - 'jbub/pgbouncer_exporter:{{ .Tag }}-arm64'
-  - name_template: 'jbub/pgbouncer_exporter:latest'
     image_templates:
       - 'jbub/pgbouncer_exporter:{{ .Tag }}'
       - 'jbub/pgbouncer_exporter:{{ .Tag }}-arm64'
