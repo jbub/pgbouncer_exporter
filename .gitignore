@@ -27,6 +27,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
+*.out
 
 # gogland
 .idea/
