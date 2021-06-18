@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/jbub/pgbouncer_exporter/internal/collector"
 	"github.com/jbub/pgbouncer_exporter/internal/config"
 	"github.com/jbub/pgbouncer_exporter/internal/server"
-	"github.com/jbub/pgbouncer_exporter/internal/store"
+	"github.com/jbub/pgbouncer_exporter/internal/sqlstore"
 
-	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"
 	"github.com/urfave/cli/v2"
 )
@@ -23,11 +24,14 @@ var Server = &cli.Command{
 
 func runServer(ctx *cli.Context) error {
 	cfg := config.LoadFromCLI(ctx)
-	st, err := store.NewSQL(cfg.DatabaseURL)
+
+	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
-		return fmt.Errorf("unable to initialize store: %v", err)
+		return fmt.Errorf("could not initialize store: %v", err)
 	}
-	defer st.Close()
+	defer db.Close()
+
+	st := sqlstore.New(db)
 
 	checkCtx, cancel := context.WithTimeout(context.Background(), cfg.StoreTimeout)
 	defer cancel()
@@ -39,13 +43,13 @@ func runServer(ctx *cli.Context) error {
 	exp := collector.New(cfg, st)
 	srv := server.New(cfg, exp)
 
-	log.Infoln("Starting ", collector.Name, version.Info())
-	log.Infoln("Server listening on", cfg.ListenAddress)
-	log.Infoln("Metrics available at", cfg.TelemetryPath)
-	log.Infoln("Build context", version.BuildContext())
+	log.Println("Starting ", collector.Name, version.Info())
+	log.Println("Server listening on", cfg.ListenAddress)
+	log.Println("Metrics available at", cfg.TelemetryPath)
+	log.Println("Build context", version.BuildContext())
 
 	if err := srv.Run(); err != nil {
-		return fmt.Errorf("unable to run server: %v", err)
+		return fmt.Errorf("could not run server: %v", err)
 	}
 	return nil
 }

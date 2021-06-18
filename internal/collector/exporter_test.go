@@ -5,64 +5,60 @@ import (
 	"testing"
 
 	"github.com/jbub/pgbouncer_exporter/internal/config"
-	"github.com/jbub/pgbouncer_exporter/internal/store"
+	"github.com/jbub/pgbouncer_exporter/internal/sqlstore"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetStoreResultExportEnabled(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
 	cfg := config.Config{
 		ExportStats:     true,
 		ExportPools:     true,
 		ExportDatabases: true,
 		ExportLists:     true,
 	}
-	st := store.NewMockStore()
-	defer st.Close()
 
-	exp := New(cfg, st)
+	exp := New(cfg, sqlstore.New(db))
 	ctx := context.Background()
 
-	res, err := exp.getStoreResult(ctx)
+	mock.ExpectQuery("SHOW STATS").WillReturnRows(sqlmock.NewRows(nil))
+	mock.ExpectQuery("SHOW POOLS").WillReturnRows(sqlmock.NewRows(nil))
+	mock.ExpectQuery("SHOW DATABASES").WillReturnRows(sqlmock.NewRows(nil))
+	mock.ExpectQuery("SHOW LISTS").WillReturnRows(sqlmock.NewRows(nil))
+
+	_, err = exp.getStoreResult(ctx)
 	require.NoError(t, err)
-
-	require.True(t, st.StatsCalled)
-	require.True(t, st.PoolsCalled)
-	require.True(t, st.DatabasesCalled)
-	require.True(t, st.ListsCalled)
-
-	require.Equal(t, res.stats, st.Stats)
-	require.Equal(t, res.pools, st.Pools)
-	require.Equal(t, res.databases, st.Databases)
-	require.Equal(t, res.lists, st.Lists)
+	require.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestGetStoreResultExportDisabled(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
 	cfg := config.Config{
 		ExportStats:     false,
 		ExportPools:     false,
 		ExportDatabases: false,
 		ExportLists:     false,
 	}
-	st := store.NewMockStore()
-	defer st.Close()
 
-	exp := New(cfg, st)
+	exp := New(cfg, sqlstore.New(db))
 	ctx := context.Background()
 
-	res, err := exp.getStoreResult(ctx)
+	_, err = exp.getStoreResult(ctx)
 	require.NoError(t, err)
-
-	require.False(t, st.StatsCalled)
-	require.False(t, st.PoolsCalled)
-	require.False(t, st.DatabasesCalled)
-	require.False(t, st.ListsCalled)
-
-	require.Equal(t, res.stats, st.Stats)
-	require.Equal(t, res.pools, st.Pools)
-	require.Equal(t, res.databases, st.Databases)
-	require.Equal(t, res.lists, st.Lists)
+	require.NoError(t, mock.ExpectationsWereMet())
 }
 
 var (
@@ -98,6 +94,14 @@ var (
 		{
 			name:  "multiple items",
 			value: "key=value key2=value2",
+			expected: prometheus.Labels{
+				"key":  "value",
+				"key2": "value2",
+			},
+		},
+		{
+			name:  "multiple items with space",
+			value: "key=value key2=value2 ",
 			expected: prometheus.Labels{
 				"key":  "value",
 				"key2": "value2",

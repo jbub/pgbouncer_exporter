@@ -3,6 +3,7 @@ package collector
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 	"sync"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/domain"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/common/log"
 )
 
 const (
@@ -94,7 +94,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 	res, err := e.getStoreResult(ctx)
 	if err != nil {
-		log.Errorf("could not get store result: %v", err)
+		log.Printf("could not get store result: %v", err)
 		return
 	}
 
@@ -122,7 +122,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	if e.cfg.ExportStats {
 		stats, err := e.stor.GetStats(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("unable to get stats: %v", err)
+			return nil, fmt.Errorf("could not get stats: %v", err)
 		}
 		res.stats = stats
 	}
@@ -130,7 +130,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	if e.cfg.ExportPools {
 		pools, err := e.stor.GetPools(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("unable to get pools: %v", err)
+			return nil, fmt.Errorf("could not get pools: %v", err)
 		}
 		res.pools = pools
 	}
@@ -138,7 +138,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	if e.cfg.ExportDatabases {
 		databases, err := e.stor.GetDatabases(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("unable to get databases: %v", err)
+			return nil, fmt.Errorf("could not get databases: %v", err)
 		}
 		res.databases = databases
 	}
@@ -146,7 +146,7 @@ func (e *Exporter) getStoreResult(ctx context.Context) (*storeResult, error) {
 	if e.cfg.ExportLists {
 		lists, err := e.stor.GetLists(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("unable to get lists: %v", err)
+			return nil, fmt.Errorf("could not get lists: %v", err)
 		}
 		res.lists = lists
 	}

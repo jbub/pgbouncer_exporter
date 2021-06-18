@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/jbub/pgbouncer_exporter/internal/config"
-	"github.com/jbub/pgbouncer_exporter/internal/store"
+	"github.com/jbub/pgbouncer_exporter/internal/sqlstore"
 
 	"github.com/urfave/cli/v2"
 )
@@ -19,11 +20,14 @@ var Health = &cli.Command{
 
 func checkHealth(ctx *cli.Context) error {
 	cfg := config.LoadFromCLI(ctx)
-	st, err := store.NewSQL(cfg.DatabaseURL)
+
+	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
-		return fmt.Errorf("unable to initialize store: %v", err)
+		return fmt.Errorf("could not initialize store: %v", err)
 	}
-	defer st.Close()
+	defer db.Close()
+
+	st := sqlstore.New(db)
 
 	checkCtx, cancel := context.WithTimeout(context.Background(), cfg.StoreTimeout)
 	defer cancel()

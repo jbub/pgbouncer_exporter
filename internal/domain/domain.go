@@ -80,7 +80,4 @@ type Store interface {
 
 	// Check checks the health of the store.
 	Check(ctx context.Context) error
-
-	// Close closes the store.
-	Close() error
 }
