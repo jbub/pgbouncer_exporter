@@ -27,20 +27,20 @@ func runServer(ctx *cli.Context) error {
 
 	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
-		return fmt.Errorf("could not initialize store: %v", err)
+		return fmt.Errorf("could not open db: %v", err)
 	}
 	defer db.Close()
 
-	st := sqlstore.New(db)
+	store := sqlstore.New(db)
 
 	checkCtx, cancel := context.WithTimeout(context.Background(), cfg.StoreTimeout)
 	defer cancel()
 
-	if err := st.Check(checkCtx); err != nil {
+	if err := store.Check(checkCtx); err != nil {
 		return fmt.Errorf("could not check store: %v", err)
 	}
 
-	exp := collector.New(cfg, st)
+	exp := collector.New(cfg, store)
 	srv := server.New(cfg, exp)
 
 	log.Println("Starting ", collector.Name, version.Info())

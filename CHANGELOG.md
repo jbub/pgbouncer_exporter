@@ -1,3 +1,8 @@
+## 0.10.0
+
+* Drop sqlx, use stdlib database.
+* Add Makefile.
+
 ## 0.9.2
 
 * Fix docker image templates.

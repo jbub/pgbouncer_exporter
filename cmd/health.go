@@ -23,16 +23,16 @@ func checkHealth(ctx *cli.Context) error {
 
 	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
-		return fmt.Errorf("could not initialize store: %v", err)
+		return fmt.Errorf("could not open db: %v", err)
 	}
 	defer db.Close()
 
-	st := sqlstore.New(db)
+	store := sqlstore.New(db)
 
 	checkCtx, cancel := context.WithTimeout(context.Background(), cfg.StoreTimeout)
 	defer cancel()
 
-	if err := st.Check(checkCtx); err != nil {
+	if err := store.Check(checkCtx); err != nil {
 		return fmt.Errorf("store health check failed: %v", err)
 	}
 	return nil
