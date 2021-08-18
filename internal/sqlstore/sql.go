@@ -13,6 +13,7 @@ type pool struct {
 	User         string
 	Active       int64
 	Waiting      int64
+	CancelReq    int64
 	ServerActive int64
 	ServerIdle   int64
 	ServerUsed   int64
@@ -30,6 +31,7 @@ type database struct {
 	Database           string
 	ForceUser          sql.NullString
 	PoolSize           int64
+	MinPoolSize        int64
 	ReservePool        int64
 	PoolMode           sql.NullString
 	MaxConnections     int64
@@ -152,6 +154,8 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 				dest = append(dest, &row.Active)
 			case "cl_waiting":
 				dest = append(dest, &row.Waiting)
+			case "cl_cancel_req":
+				dest = append(dest, &row.CancelReq)
 			case "sv_active":
 				dest = append(dest, &row.ServerActive)
 			case "sv_idle":
@@ -238,6 +242,8 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 				dest = append(dest, &row.ForceUser)
 			case "pool_size":
 				dest = append(dest, &row.PoolSize)
+			case "min_pool_size":
+				dest = append(dest, &row.MinPoolSize)
 			case "reserve_pool":
 				dest = append(dest, &row.ReservePool)
 			case "pool_mode":

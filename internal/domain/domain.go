@@ -32,6 +32,7 @@ type Pool struct {
 	User         string
 	Active       int64
 	Waiting      int64
+	CancelReq    int64
 	ServerActive int64
 	ServerIdle   int64
 	ServerUsed   int64
@@ -50,6 +51,7 @@ type Database struct {
 	Database           string
 	ForceUser          string
 	PoolSize           int64
+	MinPoolSize        int64
 	ReservePool        int64
 	PoolMode           string
 	MaxConnections     int64

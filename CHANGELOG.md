@@ -1,3 +1,8 @@
+## 0.11.0
+
+* Add support for PgBouncer 1.16.
+* Update to github.com/prometheus/common v0.30.0.
+
 ## 0.10.0
 
 * Drop sqlx, use stdlib database.
