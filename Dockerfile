@@ -1,4 +1,4 @@
-FROM alpine:3.12
+FROM alpine:3.14
 LABEL maintainer="Juraj Bubniak <juraj.bubniak@gmail.com>"
 
 RUN apk --no-cache add tzdata ca-certificates
