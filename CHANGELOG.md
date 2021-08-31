@@ -1,6 +1,7 @@
 ## 0.12.0
 
 * Build with Go 1.17.
+* Use alpine:3.14 as a base Docker image.
 
 ## 0.11.0
 
