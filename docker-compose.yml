@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    image: "postgres:12.4-alpine"
+    image: "postgres:14-alpine"
     restart: always
     ports:
       - "5432:5432"
@@ -18,7 +18,6 @@ services:
       POSTGRESQL_USERNAME: "postgres"
       POSTGRESQL_PASSWORD: "postgres"
       PGBOUNCER_AUTH_TYPE: "trust"
-      PGBOUNCER_IGNORE_STARTUP_PARAMETERS: "extra_float_digits"
     depends_on:
       - postgres
 
@@ -29,7 +28,7 @@ services:
     ports:
       - "9127:9127"
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@pgbouncer:6432/pgbouncer?sslmode=disable&binary_parameters=yes"
+      DATABASE_URL: "postgres://postgres:postgres@pgbouncer:6432/pgbouncer?sslmode=disable&statement_cache_mode=describe"
       DEFAULT_LABELS: "instance=pg1 env=dev"
     depends_on:
       - pgbouncer

@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/jbub/pgbouncer_exporter/internal/domain"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type pool struct {
@@ -40,28 +42,29 @@ type database struct {
 	Disabled           int64
 }
 
+type PgxConn interface {
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+}
+
 // New returns a new SQLStore.
-func New(db *sql.DB) *Store {
-	return &Store{db: db}
+func New(conn PgxConn) *Store {
+	return &Store{conn: conn}
 }
 
 // Store is a sql based Store implementation.
 type Store struct {
-	db *sql.DB
+	conn PgxConn
 }
 
 // GetStats returns stats.
 func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
-	rows, err := s.db.QueryContext(ctx, "SHOW STATS")
+	rows, err := s.conn.Query(ctx, "SHOW STATS")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	columns, err := rows.Columns()
-	if err != nil {
-		return nil, err
-	}
+	columns := getColumns(rows)
 
 	var row domain.Stat
 	var stats []domain.Stat
@@ -127,16 +130,13 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 
 // GetPools returns pools.
 func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
-	rows, err := s.db.QueryContext(ctx, "SHOW POOLS")
+	rows, err := s.conn.Query(ctx, "SHOW POOLS")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	columns, err := rows.Columns()
-	if err != nil {
-		return nil, err
-	}
+	columns := getColumns(rows)
 
 	var row pool
 	var pools []pool
@@ -211,16 +211,13 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 
 // GetDatabases returns databases.
 func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
-	rows, err := s.db.QueryContext(ctx, "SHOW DATABASES")
+	rows, err := s.conn.Query(ctx, "SHOW DATABASES")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	columns, err := rows.Columns()
-	if err != nil {
-		return nil, err
-	}
+	columns := getColumns(rows)
 
 	var row database
 	var databases []database
@@ -295,16 +292,13 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 
 // GetLists returns lists.
 func (s *Store) GetLists(ctx context.Context) ([]domain.List, error) {
-	rows, err := s.db.QueryContext(ctx, "SHOW LISTS")
+	rows, err := s.conn.Query(ctx, "SHOW LISTS")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	columns, err := rows.Columns()
-	if err != nil {
-		return nil, err
-	}
+	columns := getColumns(rows)
 
 	var row domain.List
 	var lists []domain.List
@@ -339,9 +333,19 @@ func (s *Store) GetLists(ctx context.Context) ([]domain.List, error) {
 // Check checks the health of the store.
 func (s *Store) Check(ctx context.Context) error {
 	// we cant use db.Ping because it is making a ";" sql query which pgbouncer does not support
-	rows, err := s.db.QueryContext(ctx, "SHOW VERSION")
+	rows, err := s.conn.Query(ctx, "SHOW VERSION")
 	if err != nil {
 		return err
 	}
-	return rows.Close()
+	rows.Close()
+	return nil
+}
+
+func getColumns(rows pgx.Rows) []string {
+	descs := rows.FieldDescriptions()
+	columns := make([]string, 0, len(descs))
+	for _, desc := range descs {
+		columns = append(columns, string(desc.Name))
+	}
+	return columns
 }

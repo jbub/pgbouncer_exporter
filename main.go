@@ -8,7 +8,6 @@ import (
 	"github.com/jbub/pgbouncer_exporter/cmd"
 	"github.com/jbub/pgbouncer_exporter/internal/collector"
 
-	_ "github.com/lib/pq"
 	"github.com/prometheus/common/version"
 	"github.com/urfave/cli/v2"
 )

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/server"
 	"github.com/jbub/pgbouncer_exporter/internal/sqlstore"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/prometheus/common/version"
 	"github.com/urfave/cli/v2"
 )
@@ -25,13 +25,19 @@ var Server = &cli.Command{
 func runServer(ctx *cli.Context) error {
 	cfg := config.LoadFromCLI(ctx)
 
-	db, err := sql.Open("postgres", cfg.DatabaseURL)
+	connCfg, err := pgx.ParseConfig(cfg.DatabaseURL)
 	if err != nil {
-		return fmt.Errorf("could not open db: %v", err)
+		return fmt.Errorf("could not parse connection config: %v", err)
 	}
-	defer db.Close()
+	connCfg.PreferSimpleProtocol = true
 
-	store := sqlstore.New(db)
+	conn, err := pgx.ConnectConfig(context.Background(), connCfg)
+	if err != nil {
+		return fmt.Errorf("could not connect: %v", err)
+	}
+	defer conn.Close(context.Background())
+
+	store := sqlstore.New(conn)
 
 	checkCtx, cancel := context.WithTimeout(context.Background(), cfg.StoreTimeout)
 	defer cancel()
