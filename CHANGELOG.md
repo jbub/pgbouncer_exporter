@@ -1,3 +1,7 @@
+## 0.13.0
+
+* Drop lib/pq and switch to jackc/pgx.
+
 ## 0.12.0
 
 * Build with Go 1.17.

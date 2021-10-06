@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -11,7 +12,7 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/domain"
 	"github.com/jbub/pgbouncer_exporter/internal/sqlstore"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/pashagolub/pgxmock"
 	"github.com/prometheus/common/expfmt"
 	"github.com/stretchr/testify/require"
 )
@@ -92,29 +93,29 @@ func TestResponseContainsMetrics(t *testing.T) {
 				StoreTimeout:    time.Millisecond * 200,
 			}
 
-			db, mock, err := sqlmock.New()
+			conn, err := pgxmock.NewConn()
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer db.Close()
+			defer conn.Close(context.Background())
 
-			srv := newTestingServer(cfg, sqlstore.New(db))
+			srv := newTestingServer(cfg, sqlstore.New(conn))
 			defer srv.Close()
 
 			if cfg.ExportPools {
-				mock.ExpectQuery("SHOW POOLS").WillReturnRows(sqlmock.NewRows([]string{"database"}).AddRow("mydb"))
+				conn.ExpectQuery("SHOW POOLS").WillReturnRows(pgxmock.NewRows([]string{"database"}).AddRow("mydb"))
 			}
 
 			if cfg.ExportStats {
-				mock.ExpectQuery("SHOW STATS").WillReturnRows(sqlmock.NewRows([]string{"database"}).AddRow("mydb"))
+				conn.ExpectQuery("SHOW STATS").WillReturnRows(pgxmock.NewRows([]string{"database"}).AddRow("mydb"))
 			}
 
 			if cfg.ExportDatabases {
-				mock.ExpectQuery("SHOW DATABASES").WillReturnRows(sqlmock.NewRows([]string{"database"}).AddRow("mydb"))
+				conn.ExpectQuery("SHOW DATABASES").WillReturnRows(pgxmock.NewRows([]string{"database"}).AddRow("mydb"))
 			}
 
 			if cfg.ExportLists {
-				mock.ExpectQuery("SHOW LISTS").WillReturnRows(sqlmock.NewRows([]string{"list"}).AddRow("mylist"))
+				conn.ExpectQuery("SHOW LISTS").WillReturnRows(pgxmock.NewRows([]string{"list"}).AddRow("mylist"))
 			}
 
 			client := srv.Client()

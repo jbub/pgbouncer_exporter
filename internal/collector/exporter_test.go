@@ -7,17 +7,17 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/config"
 	"github.com/jbub/pgbouncer_exporter/internal/sqlstore"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/pashagolub/pgxmock"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetStoreResultExportEnabled(t *testing.T) {
-	db, mock, err := sqlmock.New()
+	conn, err := pgxmock.NewConn()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer conn.Close(context.Background())
 
 	cfg := config.Config{
 		ExportStats:     true,
@@ -26,25 +26,25 @@ func TestGetStoreResultExportEnabled(t *testing.T) {
 		ExportLists:     true,
 	}
 
-	exp := New(cfg, sqlstore.New(db))
+	exp := New(cfg, sqlstore.New(conn))
 	ctx := context.Background()
 
-	mock.ExpectQuery("SHOW STATS").WillReturnRows(sqlmock.NewRows(nil))
-	mock.ExpectQuery("SHOW POOLS").WillReturnRows(sqlmock.NewRows(nil))
-	mock.ExpectQuery("SHOW DATABASES").WillReturnRows(sqlmock.NewRows(nil))
-	mock.ExpectQuery("SHOW LISTS").WillReturnRows(sqlmock.NewRows(nil))
+	conn.ExpectQuery("SHOW STATS").WillReturnRows(pgxmock.NewRows(nil))
+	conn.ExpectQuery("SHOW POOLS").WillReturnRows(pgxmock.NewRows(nil))
+	conn.ExpectQuery("SHOW DATABASES").WillReturnRows(pgxmock.NewRows(nil))
+	conn.ExpectQuery("SHOW LISTS").WillReturnRows(pgxmock.NewRows(nil))
 
 	_, err = exp.getStoreResult(ctx)
 	require.NoError(t, err)
-	require.NoError(t, mock.ExpectationsWereMet())
+	require.NoError(t, conn.ExpectationsWereMet())
 }
 
 func TestGetStoreResultExportDisabled(t *testing.T) {
-	db, mock, err := sqlmock.New()
+	conn, err := pgxmock.NewConn()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer conn.Close(context.Background())
 
 	cfg := config.Config{
 		ExportStats:     false,
@@ -53,12 +53,12 @@ func TestGetStoreResultExportDisabled(t *testing.T) {
 		ExportLists:     false,
 	}
 
-	exp := New(cfg, sqlstore.New(db))
+	exp := New(cfg, sqlstore.New(conn))
 	ctx := context.Background()
 
 	_, err = exp.getStoreResult(ctx)
 	require.NoError(t, err)
-	require.NoError(t, mock.ExpectationsWereMet())
+	require.NoError(t, conn.ExpectationsWereMet())
 }
 
 var (
