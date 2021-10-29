@@ -1,3 +1,7 @@
+## 0.13.0
+
+* Update Dockerfile to not run as nonroot.
+
 ## 0.12.0
 
 * Build with Go 1.17.
