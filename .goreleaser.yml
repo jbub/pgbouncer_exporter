@@ -43,7 +43,7 @@ dockers:
       - "jbub/pgbouncer_exporter:{{ .Tag }}"
       - "jbub/pgbouncer_exporter:latest"
     dockerfile: Dockerfile
-    use_buildx: true
+    use: buildx
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -56,7 +56,7 @@ dockers:
       - "jbub/pgbouncer_exporter:{{ .Tag }}-arm64"
       - "jbub/pgbouncer_exporter:latest-arm64"
     dockerfile: Dockerfile
-    use_buildx: true
+    use: buildx
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
