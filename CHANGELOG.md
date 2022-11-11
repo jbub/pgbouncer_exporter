@@ -1,3 +1,9 @@
+## 0.14.0
+
+* Build with Go 1.19.
+* Use alpine:3.15 as a base Docker image.
+* Update dependencies.
+
 ## 0.13.0
 
 * Update Dockerfile to not run as nonroot.
