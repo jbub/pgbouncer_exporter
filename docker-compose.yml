@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    image: "postgres:12.4-alpine"
+    image: "postgres:14-alpine"
     restart: always
     ports:
       - "5432:5432"
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: "postgres"
 
   pgbouncer:
-    image: "bitnami/pgbouncer:1.16.0"
+    image: "bitnami/pgbouncer:1.17.0"
     restart: always
     environment:
       POSTGRESQL_HOST: "postgres"
@@ -29,7 +29,7 @@ services:
     ports:
       - "9127:9127"
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@pgbouncer:6432/pgbouncer?sslmode=disable&binary_parameters=yes"
+      DATABASE_URL: "postgres://postgres:postgres@pgbouncer:6432/pgbouncer?sslmode=disable"
       DEFAULT_LABELS: "instance=pg1 env=dev"
     depends_on:
       - pgbouncer

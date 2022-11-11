@@ -3,6 +3,7 @@
 * Build with Go 1.19.
 * Use alpine:3.15 as a base Docker image.
 * Update dependencies.
+* Update docker-compose.yml.
 
 ## 0.13.0
 
