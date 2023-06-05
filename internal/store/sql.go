@@ -56,6 +56,7 @@ type database struct {
 	Database           string         `db:"database"`
 	ForceUser          sql.NullString `db:"force_user"`
 	PoolSize           int64          `db:"pool_size"`
+	MinPoolSize        int64          `db:"min_pool_size"`
 	ReservePool        int64          `db:"reserve_pool"`
 	PoolMode           sql.NullString `db:"pool_mode"`
 	MaxConnections     int64          `db:"max_connections"`
