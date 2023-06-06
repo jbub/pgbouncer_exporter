@@ -31,18 +31,22 @@ type stat struct {
 }
 
 type pool struct {
-	Database     string         `db:"database"`
-	User         string         `db:"user"`
-	Active       int64          `db:"cl_active"`
-	Waiting      int64          `db:"cl_waiting"`
-	ServerActive int64          `db:"sv_active"`
-	ServerIdle   int64          `db:"sv_idle"`
-	ServerUsed   int64          `db:"sv_used"`
-	ServerTested int64          `db:"sv_tested"`
-	ServerLogin  int64          `db:"sv_login"`
-	MaxWait      int64          `db:"maxwait"`
-	MaxWaitUs    int64          `db:"maxwait_us"`
-	PoolMode     sql.NullString `db:"pool_mode"`
+	Database            string         `db:"database"`
+	User                string         `db:"user"`
+	Active              int64          `db:"cl_active"`
+	Waiting             int64          `db:"cl_waiting"`
+	ActiveCancelReq     int64          `db:"cl_active_cancel_req"`
+	WaitingCancelReq    int64          `db:"cl_waiting_cancel_req"`
+	ServerActive        int64          `db:"sv_active"`
+	ServerActiveCancel  int64          `db:"sv_active_cancel"`
+	ServerBeingCanceled int64          `db:"sv_being_canceled"`
+	ServerIdle          int64          `db:"sv_idle"`
+	ServerUsed          int64          `db:"sv_used"`
+	ServerTested        int64          `db:"sv_tested"`
+	ServerLogin         int64          `db:"sv_login"`
+	MaxWait             int64          `db:"maxwait"`
+	MaxWaitUs           int64          `db:"maxwait_us"`
+	PoolMode            sql.NullString `db:"pool_mode"`
 }
 
 type database struct {
@@ -52,6 +56,7 @@ type database struct {
 	Database           string         `db:"database"`
 	ForceUser          sql.NullString `db:"force_user"`
 	PoolSize           int64          `db:"pool_size"`
+	MinPoolSize        int64          `db:"min_pool_size"`
 	ReservePool        int64          `db:"reserve_pool"`
 	PoolMode           sql.NullString `db:"pool_mode"`
 	MaxConnections     int64          `db:"max_connections"`
