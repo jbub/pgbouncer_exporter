@@ -14,10 +14,8 @@ type Stat struct {
 	TotalXactTime     int64
 	TotalQueryCount   int64
 	TotalWaitTime     int64
-	AverageRequests   int64
 	AverageReceived   int64
 	AverageSent       int64
-	AverageQuery      int64
 	AverageQueryCount int64
 	AverageQueryTime  int64
 	AverageXactTime   int64

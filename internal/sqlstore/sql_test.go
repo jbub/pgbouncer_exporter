@@ -20,23 +20,20 @@ func TestGetStats(t *testing.T) {
 
 	data := map[string]interface{}{
 		"database":          "pgbouncer",
-		"total_requests":    1,
-		"total_received":    2,
-		"total_sent":        3,
-		"total_query_time":  4,
-		"total_xact_count":  5,
-		"total_xact_time":   6,
-		"total_query_count": 7,
-		"total_wait_time":   8,
-		"avg_req":           9,
-		"avg_recv":          10,
-		"avg_sent":          11,
-		"avg_query":         12,
-		"avg_query_count":   13,
-		"avg_query_time":    14,
-		"avg_xact_time":     15,
-		"avg_xact_count":    16,
-		"avg_wait_time":     17,
+		"total_received":    1,
+		"total_sent":        2,
+		"total_query_time":  3,
+		"total_xact_count":  4,
+		"total_xact_time":   5,
+		"total_query_count": 6,
+		"total_wait_time":   7,
+		"avg_recv":          8,
+		"avg_sent":          9,
+		"avg_query_count":   10,
+		"avg_query_time":    11,
+		"avg_xact_time":     12,
+		"avg_xact_count":    13,
+		"avg_wait_time":     14,
 	}
 
 	mock.ExpectQuery("SHOW STATS").WillReturnRows(mapToRows(data))
@@ -54,10 +51,8 @@ func TestGetStats(t *testing.T) {
 	require.Equal(t, int64(data["total_xact_time"].(int)), stat.TotalXactTime)
 	require.Equal(t, int64(data["total_query_count"].(int)), stat.TotalQueryCount)
 	require.Equal(t, int64(data["total_wait_time"].(int)), stat.TotalWaitTime)
-	require.Equal(t, int64(data["avg_req"].(int)), stat.AverageRequests)
 	require.Equal(t, int64(data["avg_recv"].(int)), stat.AverageReceived)
 	require.Equal(t, int64(data["avg_sent"].(int)), stat.AverageSent)
-	require.Equal(t, int64(data["avg_query"].(int)), stat.AverageQuery)
 	require.Equal(t, int64(data["avg_query_count"].(int)), stat.AverageQueryCount)
 	require.Equal(t, int64(data["avg_query_time"].(int)), stat.AverageQueryTime)
 	require.Equal(t, int64(data["avg_xact_time"].(int)), stat.AverageXactTime)

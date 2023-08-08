@@ -87,14 +87,10 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 				dest = append(dest, &row.TotalQueryCount)
 			case "total_wait_time":
 				dest = append(dest, &row.TotalWaitTime)
-			case "avg_req":
-				dest = append(dest, &row.AverageRequests)
 			case "avg_recv":
 				dest = append(dest, &row.AverageReceived)
 			case "avg_sent":
 				dest = append(dest, &row.AverageSent)
-			case "avg_query":
-				dest = append(dest, &row.AverageQuery)
 			case "avg_query_count":
 				dest = append(dest, &row.AverageQueryCount)
 			case "avg_query_time":
