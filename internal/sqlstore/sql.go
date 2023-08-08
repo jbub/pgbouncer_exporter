@@ -73,32 +73,32 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 			switch column {
 			case "database":
 				dest = append(dest, &row.Database)
+			case "total_xact_count":
+				dest = append(dest, &row.TotalXactCount)
+			case "total_query_count":
+				dest = append(dest, &row.TotalQueryCount)
 			case "total_received":
 				dest = append(dest, &row.TotalReceived)
 			case "total_sent":
 				dest = append(dest, &row.TotalSent)
-			case "total_query_time":
-				dest = append(dest, &row.TotalQueryTime)
-			case "total_xact_count":
-				dest = append(dest, &row.TotalXactCount)
 			case "total_xact_time":
 				dest = append(dest, &row.TotalXactTime)
-			case "total_query_count":
-				dest = append(dest, &row.TotalQueryCount)
+			case "total_query_time":
+				dest = append(dest, &row.TotalQueryTime)
 			case "total_wait_time":
 				dest = append(dest, &row.TotalWaitTime)
+			case "avg_xact_count":
+				dest = append(dest, &row.AverageXactCount)
+			case "avg_query_count":
+				dest = append(dest, &row.AverageQueryCount)
 			case "avg_recv":
 				dest = append(dest, &row.AverageReceived)
 			case "avg_sent":
 				dest = append(dest, &row.AverageSent)
-			case "avg_query_count":
-				dest = append(dest, &row.AverageQueryCount)
-			case "avg_query_time":
-				dest = append(dest, &row.AverageQueryTime)
 			case "avg_xact_time":
 				dest = append(dest, &row.AverageXactTime)
-			case "avg_xact_count":
-				dest = append(dest, &row.AverageXactCount)
+			case "avg_query_time":
+				dest = append(dest, &row.AverageQueryTime)
 			case "avg_wait_time":
 				dest = append(dest, &row.AverageWaitTime)
 			default:

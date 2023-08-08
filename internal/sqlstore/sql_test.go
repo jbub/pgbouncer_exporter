@@ -20,19 +20,19 @@ func TestGetStats(t *testing.T) {
 
 	data := map[string]interface{}{
 		"database":          "pgbouncer",
-		"total_received":    1,
-		"total_sent":        2,
-		"total_query_time":  3,
-		"total_xact_count":  4,
+		"total_xact_count":  1,
+		"total_query_count": 2,
+		"total_received":    3,
+		"total_sent":        4,
 		"total_xact_time":   5,
-		"total_query_count": 6,
+		"total_query_time":  6,
 		"total_wait_time":   7,
-		"avg_recv":          8,
-		"avg_sent":          9,
-		"avg_query_count":   10,
-		"avg_query_time":    11,
+		"avg_xact_count":    8,
+		"avg_query_count":   9,
+		"avg_recv":          10,
+		"avg_sent":          11,
 		"avg_xact_time":     12,
-		"avg_xact_count":    13,
+		"avg_query_time":    13,
 		"avg_wait_time":     14,
 	}
 
@@ -44,19 +44,19 @@ func TestGetStats(t *testing.T) {
 
 	stat := stats[0]
 	require.Equal(t, data["database"].(string), stat.Database)
+	require.Equal(t, int64(data["total_xact_count"].(int)), stat.TotalXactCount)
+	require.Equal(t, int64(data["total_query_count"].(int)), stat.TotalQueryCount)
 	require.Equal(t, int64(data["total_received"].(int)), stat.TotalReceived)
 	require.Equal(t, int64(data["total_sent"].(int)), stat.TotalSent)
-	require.Equal(t, int64(data["total_query_time"].(int)), stat.TotalQueryTime)
-	require.Equal(t, int64(data["total_xact_count"].(int)), stat.TotalXactCount)
 	require.Equal(t, int64(data["total_xact_time"].(int)), stat.TotalXactTime)
-	require.Equal(t, int64(data["total_query_count"].(int)), stat.TotalQueryCount)
+	require.Equal(t, int64(data["total_query_time"].(int)), stat.TotalQueryTime)
 	require.Equal(t, int64(data["total_wait_time"].(int)), stat.TotalWaitTime)
+	require.Equal(t, int64(data["avg_xact_count"].(int)), stat.AverageXactCount)
+	require.Equal(t, int64(data["avg_query_count"].(int)), stat.AverageQueryCount)
 	require.Equal(t, int64(data["avg_recv"].(int)), stat.AverageReceived)
 	require.Equal(t, int64(data["avg_sent"].(int)), stat.AverageSent)
-	require.Equal(t, int64(data["avg_query_count"].(int)), stat.AverageQueryCount)
-	require.Equal(t, int64(data["avg_query_time"].(int)), stat.AverageQueryTime)
 	require.Equal(t, int64(data["avg_xact_time"].(int)), stat.AverageXactTime)
-	require.Equal(t, int64(data["avg_xact_count"].(int)), stat.AverageXactCount)
+	require.Equal(t, int64(data["avg_query_time"].(int)), stat.AverageQueryTime)
 	require.Equal(t, int64(data["avg_wait_time"].(int)), stat.AverageWaitTime)
 }
 
