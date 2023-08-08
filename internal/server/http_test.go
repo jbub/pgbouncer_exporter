@@ -34,7 +34,6 @@ var (
 			exportStats: true,
 			metrics: []string{
 				buildInfoMetric,
-				metricName(collector.SubsystemStats, "total_requests"),
 				metricName(collector.SubsystemStats, "total_received"),
 				metricName(collector.SubsystemStats, "total_sent"),
 				metricName(collector.SubsystemStats, "total_query_time"),
