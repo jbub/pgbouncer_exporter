@@ -73,8 +73,6 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 			switch column {
 			case "database":
 				dest = append(dest, &row.Database)
-			case "total_requests":
-				dest = append(dest, &row.TotalRequests)
 			case "total_received":
 				dest = append(dest, &row.TotalReceived)
 			case "total_sent":

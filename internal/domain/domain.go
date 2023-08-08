@@ -7,7 +7,6 @@ import (
 // Stat represents stat row.
 type Stat struct {
 	Database          string
-	TotalRequests     int64
 	TotalReceived     int64
 	TotalSent         int64
 	TotalQueryTime    int64

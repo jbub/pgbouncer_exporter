@@ -47,7 +47,6 @@ func TestGetStats(t *testing.T) {
 
 	stat := stats[0]
 	require.Equal(t, data["database"].(string), stat.Database)
-	require.Equal(t, int64(data["total_requests"].(int)), stat.TotalRequests)
 	require.Equal(t, int64(data["total_received"].(int)), stat.TotalReceived)
 	require.Equal(t, int64(data["total_sent"].(int)), stat.TotalSent)
 	require.Equal(t, int64(data["total_query_time"].(int)), stat.TotalQueryTime)
