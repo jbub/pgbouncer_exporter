@@ -13,6 +13,7 @@ type pool struct {
 	User                string
 	Active              int64
 	Waiting             int64
+	CancelReq           int64
 	ActiveCancelReq     int64
 	WaitingCancelReq    int64
 	ServerActive        int64
@@ -151,6 +152,8 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 				dest = append(dest, &row.Active)
 			case "cl_waiting":
 				dest = append(dest, &row.Waiting)
+			case "cl_cancel_req":
+				dest = append(dest, &row.CancelReq)
 			case "cl_active_cancel_req":
 				dest = append(dest, &row.ActiveCancelReq)
 			case "cl_waiting_cancel_req":

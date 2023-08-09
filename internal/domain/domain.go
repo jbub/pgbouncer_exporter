@@ -29,6 +29,7 @@ type Pool struct {
 	User                string
 	Active              int64
 	Waiting             int64
+	CancelReq           int64
 	ActiveCancelReq     int64
 	WaitingCancelReq    int64
 	ServerActive        int64
