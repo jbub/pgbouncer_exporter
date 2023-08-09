@@ -25,19 +25,22 @@ type Stat struct {
 
 // Pool represents pool row.
 type Pool struct {
-	Database     string
-	User         string
-	Active       int64
-	Waiting      int64
-	CancelReq    int64
-	ServerActive int64
-	ServerIdle   int64
-	ServerUsed   int64
-	ServerTested int64
-	ServerLogin  int64
-	MaxWait      int64
-	MaxWaitUs    int64
-	PoolMode     string
+	Database            string
+	User                string
+	Active              int64
+	Waiting             int64
+	ActiveCancelReq     int64
+	WaitingCancelReq    int64
+	ServerActive        int64
+	ServerActiveCancel  int64
+	ServerBeingCanceled int64
+	ServerIdle          int64
+	ServerUsed          int64
+	ServerTested        int64
+	ServerLogin         int64
+	MaxWait             int64
+	MaxWaitUs           int64
+	PoolMode            string
 }
 
 // Database represents database row.

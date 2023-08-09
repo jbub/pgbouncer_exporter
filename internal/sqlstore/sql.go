@@ -9,19 +9,22 @@ import (
 )
 
 type pool struct {
-	Database     string
-	User         string
-	Active       int64
-	Waiting      int64
-	CancelReq    int64
-	ServerActive int64
-	ServerIdle   int64
-	ServerUsed   int64
-	ServerTested int64
-	ServerLogin  int64
-	MaxWait      int64
-	MaxWaitUs    int64
-	PoolMode     sql.NullString
+	Database            string
+	User                string
+	Active              int64
+	Waiting             int64
+	ActiveCancelReq     int64
+	WaitingCancelReq    int64
+	ServerActive        int64
+	ServerActiveCancel  int64
+	ServerBeingCanceled int64
+	ServerIdle          int64
+	ServerUsed          int64
+	ServerTested        int64
+	ServerLogin         int64
+	MaxWait             int64
+	MaxWaitUs           int64
+	PoolMode            sql.NullString
 }
 
 type database struct {
@@ -148,10 +151,16 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 				dest = append(dest, &row.Active)
 			case "cl_waiting":
 				dest = append(dest, &row.Waiting)
-			case "cl_cancel_req":
-				dest = append(dest, &row.CancelReq)
+			case "cl_active_cancel_req":
+				dest = append(dest, &row.ActiveCancelReq)
+			case "cl_waiting_cancel_req":
+				dest = append(dest, &row.WaitingCancelReq)
 			case "sv_active":
 				dest = append(dest, &row.ServerActive)
+			case "sv_active_cancel":
+				dest = append(dest, &row.ServerActiveCancel)
+			case "sv_being_canceled":
+				dest = append(dest, &row.ServerBeingCanceled)
 			case "sv_idle":
 				dest = append(dest, &row.ServerIdle)
 			case "sv_used":
