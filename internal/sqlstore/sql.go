@@ -9,19 +9,23 @@ import (
 )
 
 type pool struct {
-	Database     string
-	User         string
-	Active       int64
-	Waiting      int64
-	CancelReq    int64
-	ServerActive int64
-	ServerIdle   int64
-	ServerUsed   int64
-	ServerTested int64
-	ServerLogin  int64
-	MaxWait      int64
-	MaxWaitUs    int64
-	PoolMode     sql.NullString
+	Database            string
+	User                string
+	Active              int64
+	Waiting             int64
+	CancelReq           int64
+	ActiveCancelReq     int64
+	WaitingCancelReq    int64
+	ServerActive        int64
+	ServerActiveCancel  int64
+	ServerBeingCanceled int64
+	ServerIdle          int64
+	ServerUsed          int64
+	ServerTested        int64
+	ServerLogin         int64
+	MaxWait             int64
+	MaxWaitUs           int64
+	PoolMode            sql.NullString
 }
 
 type database struct {
@@ -73,38 +77,32 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 			switch column {
 			case "database":
 				dest = append(dest, &row.Database)
-			case "total_requests":
-				dest = append(dest, &row.TotalRequests)
+			case "total_xact_count":
+				dest = append(dest, &row.TotalXactCount)
+			case "total_query_count":
+				dest = append(dest, &row.TotalQueryCount)
 			case "total_received":
 				dest = append(dest, &row.TotalReceived)
 			case "total_sent":
 				dest = append(dest, &row.TotalSent)
-			case "total_query_time":
-				dest = append(dest, &row.TotalQueryTime)
-			case "total_xact_count":
-				dest = append(dest, &row.TotalXactCount)
 			case "total_xact_time":
 				dest = append(dest, &row.TotalXactTime)
-			case "total_query_count":
-				dest = append(dest, &row.TotalQueryCount)
+			case "total_query_time":
+				dest = append(dest, &row.TotalQueryTime)
 			case "total_wait_time":
 				dest = append(dest, &row.TotalWaitTime)
-			case "avg_req":
-				dest = append(dest, &row.AverageRequests)
+			case "avg_xact_count":
+				dest = append(dest, &row.AverageXactCount)
+			case "avg_query_count":
+				dest = append(dest, &row.AverageQueryCount)
 			case "avg_recv":
 				dest = append(dest, &row.AverageReceived)
 			case "avg_sent":
 				dest = append(dest, &row.AverageSent)
-			case "avg_query":
-				dest = append(dest, &row.AverageQuery)
-			case "avg_query_count":
-				dest = append(dest, &row.AverageQueryCount)
-			case "avg_query_time":
-				dest = append(dest, &row.AverageQueryTime)
 			case "avg_xact_time":
 				dest = append(dest, &row.AverageXactTime)
-			case "avg_xact_count":
-				dest = append(dest, &row.AverageXactCount)
+			case "avg_query_time":
+				dest = append(dest, &row.AverageQueryTime)
 			case "avg_wait_time":
 				dest = append(dest, &row.AverageWaitTime)
 			default:
@@ -156,8 +154,16 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 				dest = append(dest, &row.Waiting)
 			case "cl_cancel_req":
 				dest = append(dest, &row.CancelReq)
+			case "cl_active_cancel_req":
+				dest = append(dest, &row.ActiveCancelReq)
+			case "cl_waiting_cancel_req":
+				dest = append(dest, &row.WaitingCancelReq)
 			case "sv_active":
 				dest = append(dest, &row.ServerActive)
+			case "sv_active_cancel":
+				dest = append(dest, &row.ServerActiveCancel)
+			case "sv_being_canceled":
+				dest = append(dest, &row.ServerBeingCanceled)
 			case "sv_idle":
 				dest = append(dest, &row.ServerIdle)
 			case "sv_used":

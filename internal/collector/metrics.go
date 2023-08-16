@@ -10,22 +10,6 @@ func buildMetrics(cfg config.Config) []metric {
 	return []metric{
 		{
 			enabled: cfg.ExportStats,
-			name:    fqName(SubsystemStats, "total_requests"),
-			help:    "Total number of SQL requests pooled by pgbouncer.",
-			labels:  []string{"database"},
-			valType: prometheus.GaugeValue,
-			eval: func(res *storeResult) (results []metricResult) {
-				for _, stat := range res.stats {
-					results = append(results, metricResult{
-						labels: []string{stat.Database},
-						value:  float64(stat.TotalRequests),
-					})
-				}
-				return results
-			},
-		},
-		{
-			enabled: cfg.ExportStats,
 			name:    fqName(SubsystemStats, "total_received"),
 			help:    "Total volume in bytes of network traffic received by pgbouncer.",
 			labels:  []string{"database"},
