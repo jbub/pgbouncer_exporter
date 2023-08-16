@@ -3,7 +3,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/jbub/pgbouncer_exporter.svg?maxAge=604800)][hub]
 [![Go Report Card](https://goreportcard.com/badge/github.com/jbub/pgbouncer_exporter)][goreportcard]
 
-Prometheus exporter for Pgbouncer metrics.
+Prometheus exporter for Pgbouncer metrics. The minimum supported version of Pgbouncer is 1.18.
 
 ## Docker
 
