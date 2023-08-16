@@ -1,3 +1,11 @@
+## 0.15.0
+
+* Build with Go 1.20.
+* Use alpine:3.17 as a base Docker image.
+* Add support for PgBouncer 1.18 and make it minimum supported version.
+* Use Github actions instead of Drone.
+* Update dependencies.
+
 ## 0.14.0
 
 * Build with Go 1.19.
