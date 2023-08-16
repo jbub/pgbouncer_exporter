@@ -49,7 +49,7 @@ func newHTTPMux(reg prometheus.Gatherer, telemetryPath string) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.Handle(telemetryPath, promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		w.Write(getLandingPage(telemetryPath))
+		_, _ = w.Write(getLandingPage(telemetryPath))
 	})
 	return mux
 }
