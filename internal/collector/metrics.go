@@ -234,6 +234,22 @@ func buildMetrics(cfg config.Config) []metric {
 		},
 		{
 			enabled: cfg.ExportDatabases,
+			name:    fqName(SubsystemDatabases, "pool_size"),
+			help:    "Maximum number of server connections.",
+			labels:  []string{"name", "pool_mode"},
+			valType: prometheus.GaugeValue,
+			eval: func(res *storeResult) (results []metricResult) {
+				for _, database := range res.databases {
+					results = append(results, metricResult{
+						labels: []string{database.Name, database.PoolMode},
+						value:  float64(database.PoolSize),
+					})
+				}
+				return results
+			},
+		},
+		{
+			enabled: cfg.ExportDatabases,
 			name:    fqName(SubsystemDatabases, "current_connections"),
 			help:    "Current number of connections for this database.",
 			labels:  []string{"name", "pool_mode"},
@@ -243,6 +259,22 @@ func buildMetrics(cfg config.Config) []metric {
 					results = append(results, metricResult{
 						labels: []string{database.Name, database.PoolMode},
 						value:  float64(database.CurrentConnections),
+					})
+				}
+				return results
+			},
+		},
+		{
+			enabled: cfg.ExportDatabases,
+			name:    fqName(SubsystemDatabases, "max_connections"),
+			help:    "Maximum number of allowed connections for this database.",
+			labels:  []string{"name", "pool_mode"},
+			valType: prometheus.GaugeValue,
+			eval: func(res *storeResult) (results []metricResult) {
+				for _, database := range res.databases {
+					results = append(results, metricResult{
+						labels: []string{database.Name, database.PoolMode},
+						value:  float64(database.MaxConnections),
 					})
 				}
 				return results
