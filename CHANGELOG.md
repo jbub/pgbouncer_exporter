@@ -1,3 +1,9 @@
+## 0.16.0
+
+* Build with Go 1.21.
+* Use alpine:3.18 as a base Docker image.
+* Update github.com/prometheus/client_golang to v1.17.0.
+
 ## 0.15.0
 
 * Build with Go 1.20.
