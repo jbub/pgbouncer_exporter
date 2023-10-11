@@ -1,4 +1,4 @@
-FROM alpine:3.17
+FROM alpine:3.18
 LABEL maintainer="Juraj Bubniak <juraj.bubniak@gmail.com>"
 
 RUN addgroup -S pgbouncer_exporter \
