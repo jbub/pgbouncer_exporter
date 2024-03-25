@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    image: "postgres:14-alpine"
+    image: "postgres:15-alpine"
     restart: always
     ports:
       - "5432:5432"
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: "postgres"
 
   pgbouncer:
-    image: "bitnami/pgbouncer:1.18.0"
+    image: "bitnami/pgbouncer:1.22.0"
     restart: always
     environment:
       POSTGRESQL_HOST: "postgres"
