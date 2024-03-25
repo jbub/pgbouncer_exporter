@@ -1,3 +1,11 @@
+## 0.17.0
+
+* Build with Go 1.22.
+* Use alpine:3.19 as a base Docker image.
+* Add pool_size and max_connections metrics.
+* Update dependencies.
+* Update docker-compose.yml versions.
+
 ## 0.16.0
 
 * Build with Go 1.21.
