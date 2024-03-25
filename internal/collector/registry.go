@@ -3,7 +3,7 @@ package collector
 import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
-	"github.com/prometheus/common/version"
+	"github.com/prometheus/client_golang/prometheus/collectors/version"
 )
 
 // NewRegistry returns new prometheus registry with registered Exporter and common exporters.
