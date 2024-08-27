@@ -37,6 +37,7 @@ type database struct {
 	PoolSize           int64
 	MinPoolSize        int64
 	ReservePool        int64
+	ServerLifetime     int64
 	PoolMode           sql.NullString
 	MaxConnections     int64
 	CurrentConnections int64
@@ -77,6 +78,8 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 			switch column {
 			case "database":
 				dest = append(dest, &row.Database)
+			case "total_server_assignment_count":
+				dest = append(dest, &row.TotalServerAssignmentCount)
 			case "total_xact_count":
 				dest = append(dest, &row.TotalXactCount)
 			case "total_query_count":
@@ -91,6 +94,8 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 				dest = append(dest, &row.TotalQueryTime)
 			case "total_wait_time":
 				dest = append(dest, &row.TotalWaitTime)
+			case "avg_server_assignment_count":
+				dest = append(dest, &row.AverageServerAssignmentCount)
 			case "avg_xact_count":
 				dest = append(dest, &row.AverageXactCount)
 			case "avg_query_count":
@@ -252,6 +257,8 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 				dest = append(dest, &row.MinPoolSize)
 			case "reserve_pool":
 				dest = append(dest, &row.ReservePool)
+			case "server_lifetime":
+				dest = append(dest, &row.ServerLifetime)
 			case "pool_mode":
 				dest = append(dest, &row.PoolMode)
 			case "max_connections":

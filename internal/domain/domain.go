@@ -6,21 +6,23 @@ import (
 
 // Stat represents stat row.
 type Stat struct {
-	Database          string
-	TotalReceived     int64
-	TotalSent         int64
-	TotalQueryTime    int64
-	TotalXactCount    int64
-	TotalXactTime     int64
-	TotalQueryCount   int64
-	TotalWaitTime     int64
-	AverageReceived   int64
-	AverageSent       int64
-	AverageQueryCount int64
-	AverageQueryTime  int64
-	AverageXactTime   int64
-	AverageXactCount  int64
-	AverageWaitTime   int64
+	Database                     string
+	TotalReceived                int64
+	TotalSent                    int64
+	TotalQueryTime               int64
+	TotalXactCount               int64
+	TotalXactTime                int64
+	TotalQueryCount              int64
+	TotalWaitTime                int64
+	TotalServerAssignmentCount   int64
+	AverageReceived              int64
+	AverageSent                  int64
+	AverageQueryCount            int64
+	AverageQueryTime             int64
+	AverageXactTime              int64
+	AverageXactCount             int64
+	AverageWaitTime              int64
+	AverageServerAssignmentCount int64
 }
 
 // Pool represents pool row.
