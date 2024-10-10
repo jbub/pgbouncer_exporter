@@ -61,6 +61,7 @@ type Database struct {
 	CurrentConnections int64
 	Paused             int64
 	Disabled           int64
+	ServerLifetime     int64
 }
 
 // List represents list row.

@@ -281,6 +281,22 @@ func buildMetrics(cfg config.Config) []metric {
 			},
 		},
 		{
+			enabled: cfg.ExportDatabases,
+			name:    fqName(SubsystemDatabases, "server_lifetime"),
+			help:    "The maximum lifetime of a server connection for this database.",
+			labels:  []string{"name", "pool_mode"},
+			valType: prometheus.GaugeValue,
+			eval: func(res *storeResult) (results []metricResult) {
+				for _, database := range res.databases {
+					results = append(results, metricResult{
+						labels: []string{database.Name, database.PoolMode},
+						value:  float64(database.ServerLifetime),
+					})
+				}
+				return results
+			},
+		},
+		{
 			enabled: cfg.ExportLists,
 			name:    fqName(SubsystemLists, "items"),
 			help:    "List of internal pgbouncer information.",

@@ -72,7 +72,7 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 	var stats []domain.Stat
 
 	for rows.Next() {
-		dest := make([]interface{}, 0, len(columns))
+		dest := make([]any, 0, len(columns))
 
 		for _, column := range columns {
 			switch column {
@@ -145,7 +145,7 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 	var pools []pool
 
 	for rows.Next() {
-		dest := make([]interface{}, 0, len(columns))
+		dest := make([]any, 0, len(columns))
 
 		for _, column := range columns {
 			switch column {
@@ -237,7 +237,7 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 	var databases []database
 
 	for rows.Next() {
-		dest := make([]interface{}, 0, len(columns))
+		dest := make([]any, 0, len(columns))
 
 		for _, column := range columns {
 			switch column {
@@ -300,6 +300,7 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 			CurrentConnections: row.CurrentConnections,
 			Paused:             row.Paused,
 			Disabled:           row.Disabled,
+			ServerLifetime:     row.ServerLifetime,
 		})
 	}
 
@@ -323,7 +324,7 @@ func (s *Store) GetLists(ctx context.Context) ([]domain.List, error) {
 	var lists []domain.List
 
 	for rows.Next() {
-		dest := make([]interface{}, 0, len(columns))
+		dest := make([]any, 0, len(columns))
 
 		for _, column := range columns {
 			switch column {
