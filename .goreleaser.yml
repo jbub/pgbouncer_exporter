@@ -1,3 +1,4 @@
+version: 2
 project_name: pgbouncer_exporter
 release:
   github:
@@ -37,7 +38,7 @@ archives:
       - README.md
       - CHANGELOG.md
 snapshot:
-  name_template: "SNAPSHOT-{{ .Commit }}"
+  version_template: "{{ .Commit }}"
 dockers:
   - image_templates:
       - "jbub/pgbouncer_exporter:{{ .Tag }}"
