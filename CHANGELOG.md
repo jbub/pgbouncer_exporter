@@ -1,3 +1,11 @@
+## 0.18.0
+
+* Build with Go 1.23.
+* Use alpine:3.20 as a base Docker image.
+* Add server_lifetime metric.
+* Use PgBouncer 1.23 in docker compose.
+* Update dependencies.
+
 ## 0.17.0
 
 * Build with Go 1.22.
