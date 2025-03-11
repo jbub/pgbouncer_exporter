@@ -43,7 +43,7 @@ dockers:
   - image_templates:
       - "jbub/pgbouncer_exporter:{{ .Tag }}"
       - "jbub/pgbouncer_exporter:latest"
-    dockerfile: Dockerfile
+    dockerfile: .goreleaser/Dockerfile
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -56,7 +56,7 @@ dockers:
   - image_templates:
       - "jbub/pgbouncer_exporter:{{ .Tag }}-arm64"
       - "jbub/pgbouncer_exporter:latest-arm64"
-    dockerfile: Dockerfile
+    dockerfile: .goreleaser/Dockerfile
     use: buildx
     build_flag_templates:
       - "--pull"
