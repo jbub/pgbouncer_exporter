@@ -18,12 +18,6 @@ docker run \
   jbub/pgbouncer_exporter
 ```
 
-In order to build the binary for the development docker compose setup you can use this command:
-
-```bash
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
-```
-
 ## Collectors
 
 All of the collectors are enabled by default, you can control that using environment variables by settings

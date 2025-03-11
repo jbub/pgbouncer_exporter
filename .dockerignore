@@ -1,0 +1,8 @@
+.goreleaser.yml
+.github/
+dist/
+docker-compose.yml
+CHANGELOG.md
+README.md
+LICENSE
+Makefile
