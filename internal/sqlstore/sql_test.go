@@ -125,6 +125,7 @@ func TestGetDatabases(t *testing.T) {
 		"port":                23,
 		"force_user":          "myuser",
 		"pool_size":           4,
+		"reserve_pool_size":   5,
 		"reserve_pool":        5,
 		"pool_mode":           "transaction",
 		"max_connections":     7,
@@ -147,7 +148,8 @@ func TestGetDatabases(t *testing.T) {
 	require.Equal(t, int64(data["port"].(int)), database.Port)
 	require.Equal(t, data["force_user"].(string), database.ForceUser)
 	require.Equal(t, int64(data["pool_size"].(int)), database.PoolSize)
-	require.Equal(t, int64(data["reserve_pool"].(int)), database.ReservePool)
+	require.Equal(t, int64(data["reserve_pool_size"].(int)), database.ReservePoolSize)
+	require.Equal(t, int64(data["reserve_pool"].(int)), database.ReservePoolSize)
 	require.Equal(t, data["pool_mode"].(string), database.PoolMode)
 	require.Equal(t, int64(data["max_connections"].(int)), database.MaxConnections)
 	require.Equal(t, int64(data["current_connections"].(int)), database.CurrentConnections)

@@ -15,6 +15,9 @@ type Stat struct {
 	TotalQueryCount              int64
 	TotalWaitTime                int64
 	TotalServerAssignmentCount   int64
+	TotalClientParseCount        int64
+	TotalServerParseCount        int64
+	TotalBindCount               int64
 	AverageReceived              int64
 	AverageSent                  int64
 	AverageQueryCount            int64
@@ -23,6 +26,9 @@ type Stat struct {
 	AverageXactCount             int64
 	AverageWaitTime              int64
 	AverageServerAssignmentCount int64
+	AverageClientParseCount      int64
+	AverageServerParseCount      int64
+	AverageBindCount             int64
 }
 
 // Pool represents pool row.
@@ -55,7 +61,7 @@ type Database struct {
 	ForceUser          string
 	PoolSize           int64
 	MinPoolSize        int64
-	ReservePool        int64
+	ReservePoolSize    int64
 	PoolMode           string
 	MaxConnections     int64
 	CurrentConnections int64

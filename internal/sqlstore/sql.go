@@ -26,23 +26,27 @@ type pool struct {
 	MaxWait             int64
 	MaxWaitUs           int64
 	PoolMode            sql.NullString
+	LoadBalanceHosts    sql.NullString
 }
 
 type database struct {
-	Name               string
-	Host               sql.NullString
-	Port               int64
-	Database           string
-	ForceUser          sql.NullString
-	PoolSize           int64
-	MinPoolSize        int64
-	ReservePool        int64
-	ServerLifetime     int64
-	PoolMode           sql.NullString
-	MaxConnections     int64
-	CurrentConnections int64
-	Paused             int64
-	Disabled           int64
+	Name                     string
+	Host                     sql.NullString
+	Port                     int64
+	Database                 string
+	ForceUser                sql.NullString
+	PoolSize                 int64
+	MinPoolSize              int64
+	ReservePoolSize          int64
+	ServerLifetime           int64
+	PoolMode                 sql.NullString
+	MaxConnections           int64
+	CurrentConnections       int64
+	Paused                   int64
+	Disabled                 int64
+	LoadBalanceHosts         sql.NullString
+	MaxClientConnections     int64
+	CurrentClientConnections int64
 }
 
 // New returns a new SQLStore.
@@ -94,6 +98,12 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 				dest = append(dest, &row.TotalQueryTime)
 			case "total_wait_time":
 				dest = append(dest, &row.TotalWaitTime)
+			case "total_client_parse_count":
+				dest = append(dest, &row.TotalClientParseCount)
+			case "total_server_parse_count":
+				dest = append(dest, &row.TotalServerParseCount)
+			case "total_bind_count":
+				dest = append(dest, &row.TotalBindCount)
 			case "avg_server_assignment_count":
 				dest = append(dest, &row.AverageServerAssignmentCount)
 			case "avg_xact_count":
@@ -110,6 +120,12 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 				dest = append(dest, &row.AverageQueryTime)
 			case "avg_wait_time":
 				dest = append(dest, &row.AverageWaitTime)
+			case "avg_client_parse_count":
+				dest = append(dest, &row.AverageClientParseCount)
+			case "avg_server_parse_count":
+				dest = append(dest, &row.AverageServerParseCount)
+			case "avg_bind_count":
+				dest = append(dest, &row.AverageBindCount)
 			default:
 				return nil, fmt.Errorf("unexpected column: %v", column)
 			}
@@ -183,6 +199,8 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 				dest = append(dest, &row.MaxWaitUs)
 			case "pool_mode":
 				dest = append(dest, &row.PoolMode)
+			case "load_balance_hosts":
+				dest = append(dest, &row.LoadBalanceHosts)
 			default:
 				return nil, fmt.Errorf("unexpected column: %v", column)
 			}
@@ -255,8 +273,10 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 				dest = append(dest, &row.PoolSize)
 			case "min_pool_size":
 				dest = append(dest, &row.MinPoolSize)
+			case "reserve_pool_size": // renamed in PgBouncer 1.24 https://github.com/pgbouncer/pgbouncer/pull/1232
+				dest = append(dest, &row.ReservePoolSize)
 			case "reserve_pool":
-				dest = append(dest, &row.ReservePool)
+				dest = append(dest, &row.ReservePoolSize)
 			case "server_lifetime":
 				dest = append(dest, &row.ServerLifetime)
 			case "pool_mode":
@@ -269,6 +289,12 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 				dest = append(dest, &row.Paused)
 			case "disabled":
 				dest = append(dest, &row.Disabled)
+			case "load_balance_hosts":
+				dest = append(dest, &row.LoadBalanceHosts)
+			case "max_client_connections":
+				dest = append(dest, &row.MaxClientConnections)
+			case "current_client_connections":
+				dest = append(dest, &row.CurrentClientConnections)
 			default:
 				return nil, fmt.Errorf("unexpected column: %v", column)
 			}
@@ -294,7 +320,7 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 			Database:           row.Database,
 			ForceUser:          row.ForceUser.String,
 			PoolSize:           row.PoolSize,
-			ReservePool:        row.ReservePool,
+			ReservePoolSize:    row.ReservePoolSize,
 			PoolMode:           row.PoolMode.String,
 			MaxConnections:     row.MaxConnections,
 			CurrentConnections: row.CurrentConnections,
