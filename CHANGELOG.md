@@ -1,3 +1,9 @@
+## 0.20.0
+
+* Build with Go 1.25.
+* Use alpine:3.22 as a base Docker image.
+* Update dependencies.
+
 ## 0.19.0
 
 * Add support for PgBouncer 1.24.
