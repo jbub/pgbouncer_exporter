@@ -10,6 +10,7 @@ import (
 	"github.com/jbub/pgbouncer_exporter/internal/config"
 	"github.com/jbub/pgbouncer_exporter/internal/domain"
 	"github.com/jbub/pgbouncer_exporter/internal/sqlstore"
+	"github.com/prometheus/common/model"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/prometheus/common/expfmt"
@@ -78,7 +79,7 @@ func newTestingServer(cfg config.Config, st domain.Store) *httptest.Server {
 }
 
 func TestResponseContainsMetrics(t *testing.T) {
-	var parser expfmt.TextParser
+	parser := expfmt.NewTextParser(model.UTF8Validation)
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {

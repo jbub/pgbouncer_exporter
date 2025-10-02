@@ -1,8 +1,8 @@
-FROM golang:1.23 AS builder
+FROM golang:1.25 AS builder
 COPY . .
 RUN CGO_ENABLED=0 go build -ldflags "-extldflags '-static'" -tags netgo -o /bin/pgbouncer_exporter
 
-FROM alpine:3.21
+FROM alpine:3.22
 LABEL maintainer="Juraj Bubniak <juraj.bubniak@gmail.com>"
 
 RUN addgroup -S pgbouncer_exporter \
