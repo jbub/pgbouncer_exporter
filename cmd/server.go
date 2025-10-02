@@ -29,7 +29,7 @@ func runServer(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("could not open db: %v", err)
 	}
-	defer db.Close()
+	defer db.Close() //nolint:errcheck
 
 	store := sqlstore.New(db)
 

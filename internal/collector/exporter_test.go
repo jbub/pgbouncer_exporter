@@ -17,7 +17,7 @@ func TestGetStoreResultExportEnabled(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer db.Close() //nolint:errcheck
 
 	cfg := config.Config{
 		ExportStats:     true,
@@ -44,7 +44,7 @@ func TestGetStoreResultExportDisabled(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer db.Close() //nolint:errcheck
 
 	cfg := config.Config{
 		ExportStats:     false,

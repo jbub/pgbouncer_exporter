@@ -14,7 +14,7 @@ func TestGetStats(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer db.Close() //nolint:errcheck
 
 	st := New(db)
 
@@ -69,7 +69,7 @@ func TestGetPools(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer db.Close() //nolint:errcheck
 
 	st := New(db)
 
@@ -114,7 +114,7 @@ func TestGetDatabases(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer db.Close() //nolint:errcheck
 
 	st := New(db)
 
@@ -163,7 +163,7 @@ func TestGetLists(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
+	defer db.Close() //nolint:errcheck
 
 	st := New(db)
 

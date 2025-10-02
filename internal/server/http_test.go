@@ -96,7 +96,7 @@ func TestResponseContainsMetrics(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer db.Close()
+			defer db.Close() //nolint:errcheck
 
 			srv := newTestingServer(cfg, sqlstore.New(db))
 			defer srv.Close()
@@ -120,7 +120,7 @@ func TestResponseContainsMetrics(t *testing.T) {
 			client := srv.Client()
 			resp, err := client.Get(srv.URL + cfg.TelemetryPath)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer resp.Body.Close() //nolint:errcheck
 
 			metrics, err := parser.TextToMetricFamilies(resp.Body)
 			require.NoError(t, err)

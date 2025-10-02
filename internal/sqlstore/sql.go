@@ -65,7 +65,7 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer rows.Close() //nolint:errcheck
 
 	columns, err := rows.Columns()
 	if err != nil {
@@ -150,7 +150,7 @@ func (s *Store) GetPools(ctx context.Context) ([]domain.Pool, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer rows.Close() //nolint:errcheck
 
 	columns, err := rows.Columns()
 	if err != nil {
@@ -244,7 +244,7 @@ func (s *Store) GetDatabases(ctx context.Context) ([]domain.Database, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer rows.Close() //nolint:errcheck
 
 	columns, err := rows.Columns()
 	if err != nil {
@@ -339,7 +339,7 @@ func (s *Store) GetLists(ctx context.Context) ([]domain.List, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer rows.Close() //nolint:errcheck
 
 	columns, err := rows.Columns()
 	if err != nil {
