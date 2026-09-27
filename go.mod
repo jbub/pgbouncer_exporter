@@ -1,6 +1,6 @@
 module github.com/jbub/pgbouncer_exporter
 
-go 1.26
+go 1.27
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2

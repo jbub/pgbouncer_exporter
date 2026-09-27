@@ -1,4 +1,4 @@
-FROM golang:1.26 AS builder
+FROM golang:1.27 AS builder
 COPY . .
 RUN CGO_ENABLED=0 go build -ldflags "-extldflags '-static'" -tags netgo -o /bin/pgbouncer_exporter
 
