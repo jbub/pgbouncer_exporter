@@ -2,7 +2,7 @@ FROM golang:1.27 AS builder
 COPY . .
 RUN CGO_ENABLED=0 go build -ldflags "-extldflags '-static'" -tags netgo -o /bin/pgbouncer_exporter
 
-FROM alpine:3.23
+FROM alpine:3.24
 LABEL maintainer="Juraj Bubniak <juraj.bubniak@gmail.com>"
 
 RUN addgroup -S pgbouncer_exporter \
