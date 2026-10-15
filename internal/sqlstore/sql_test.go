@@ -28,6 +28,7 @@ func TestGetStats(t *testing.T) {
 		"total_query_time":              6,
 		"total_wait_time":               7,
 		"total_server_assignment_count": 8,
+		"total_client_login_count":      17,
 		"avg_xact_count":                9,
 		"avg_query_count":               10,
 		"avg_recv":                      11,
@@ -36,6 +37,7 @@ func TestGetStats(t *testing.T) {
 		"avg_query_time":                14,
 		"avg_wait_time":                 15,
 		"avg_server_assignment_count":   16,
+		"avg_client_login_count":        18,
 	}
 
 	mock.ExpectQuery("SHOW STATS").WillReturnRows(mapToRows(data))
@@ -62,6 +64,8 @@ func TestGetStats(t *testing.T) {
 	require.Equal(t, int64(data["avg_query_time"].(int)), stat.AverageQueryTime)
 	require.Equal(t, int64(data["avg_wait_time"].(int)), stat.AverageWaitTime)
 	require.Equal(t, int64(data["avg_server_assignment_count"].(int)), stat.AverageServerAssignmentCount)
+	require.Equal(t, int64(data["total_client_login_count"].(int)), stat.TotalClientLoginCount)
+	require.Equal(t, int64(data["avg_client_login_count"].(int)), stat.AverageClientLoginCount)
 }
 
 func TestGetPools(t *testing.T) {

@@ -104,6 +104,8 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 				dest = append(dest, &row.TotalServerParseCount)
 			case "total_bind_count":
 				dest = append(dest, &row.TotalBindCount)
+			case "total_client_login_count":
+				dest = append(dest, &row.TotalClientLoginCount)
 			case "avg_server_assignment_count":
 				dest = append(dest, &row.AverageServerAssignmentCount)
 			case "avg_xact_count":
@@ -126,6 +128,8 @@ func (s *Store) GetStats(ctx context.Context) ([]domain.Stat, error) {
 				dest = append(dest, &row.AverageServerParseCount)
 			case "avg_bind_count":
 				dest = append(dest, &row.AverageBindCount)
+			case "avg_client_login_count":
+				dest = append(dest, &row.AverageClientLoginCount)
 			default:
 				return nil, fmt.Errorf("unexpected column: %v", column)
 			}

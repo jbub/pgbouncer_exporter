@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add support for PgBouncer 1.26.
+
 ## 0.21.0
 
 * Build with Go 1.27.
