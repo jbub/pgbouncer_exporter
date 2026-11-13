@@ -1,4 +1,4 @@
-## Unreleased
+## 0.22.0
 
 * Add support for PgBouncer 1.26.
 
