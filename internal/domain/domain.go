@@ -18,6 +18,7 @@ type Stat struct {
 	TotalClientParseCount        int64
 	TotalServerParseCount        int64
 	TotalBindCount               int64
+	TotalClientLoginCount        int64
 	AverageReceived              int64
 	AverageSent                  int64
 	AverageQueryCount            int64
@@ -29,6 +30,7 @@ type Stat struct {
 	AverageClientParseCount      int64
 	AverageServerParseCount      int64
 	AverageBindCount             int64
+	AverageClientLoginCount      int64
 }
 
 // Pool represents pool row.
